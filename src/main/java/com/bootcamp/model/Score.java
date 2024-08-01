@@ -1,10 +1,24 @@
 package com.bootcamp.model;
 
+import com.bootcamp.utils.Grade;
+
 public class Score {
     private String scoreId;
+    private String studentId;
+    private String subjectId;
+    private int score;
+    private Enum<Grade> grade;
 
     public Score(String seq) {
         this.scoreId = seq;
+    }
+
+    public Score(String scoreId, String studentId, String subjectId, int score, Enum<Grade> grade) {
+        this.scoreId = scoreId;
+        this.studentId = studentId;
+        this.subjectId = subjectId;
+        this.score = score;
+        this.grade = grade;
     }
 
     // Getter
@@ -12,4 +26,27 @@ public class Score {
         return scoreId;
     }
 
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public String getSubjectId() {
+        return subjectId;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public Enum<Grade> getGrade() {
+        return grade;
+    }
+
+    public void setGrade(Enum<Grade> grade) {
+        this.grade = grade;
+    }
 }
