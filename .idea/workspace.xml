@@ -5,13 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="941b03f8-6dd5-4589-95cd-a8587080da1e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/8.5/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.5/checksums/checksums.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.5/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.5/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/8.5/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.5/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/bootcamp/model/SubjectInfo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/bootcamp/CampManagementApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/com/bootcamp/CampManagementApplication.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/bootcamp/CampManagementApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bootcamp/CampManagementApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bootcamp/model/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bootcamp/model/Student.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,6 +31,13 @@
         </projects_view>
       </state>
     </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -96,7 +100,7 @@
       <workItem from="1722481176030" duration="2342000" />
       <workItem from="1722490712310" duration="1381000" />
       <workItem from="1722492115013" duration="264000" />
-      <workItem from="1722492393923" duration="3996000" />
+      <workItem from="1722492393923" duration="13639000" />
     </task>
     <servers />
   </component>

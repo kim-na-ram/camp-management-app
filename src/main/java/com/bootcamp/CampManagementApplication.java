@@ -4,6 +4,7 @@ package com.bootcamp;
 import com.bootcamp.model.Score;
 import com.bootcamp.model.Student;
 import com.bootcamp.model.Subject;
+import com.bootcamp.model.SubjectInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -174,23 +175,34 @@ public class CampManagementApplication {
         System.out.print("수강생 이름 입력: ");
         String studentName = sc.nextLine();
         // 기능 구현 (필수 과목, 선택 과목)
-        System.out.println("필수 과목을 입력하세요. *최소 3과목 이상* (종료하려면 '완료' 입력)...");
+        System.out.println("필수 과목에 해당하는 번호를 입력하세요. (1 ~ 5)");
+        System.out.println("1. Java ||  2. 객체 지향    ||  3. Spring");
+        System.out.println("4. JPA  ||  5. MySQL");
+        System.out.println("0. 입력 종료");
+        System.out.println("*최소 3과목 이상* (종료하려면 '0' 입력)...");
         System.out.println("필수 과목명: ");
         while (true) {
-            String input = sc.nextLine();
-            if (input.equals("완료")) {
+            int input = sc.nextInt();
+            if (input == 0) {
                 break;
             }
-            compulsory.add(input);
+            SubjectInfo Subject = SubjectInfo.getMandatoryId(input);
+            compulsory.add(Subject.getSubjectName());
         }
-        System.out.println("선택 과목을 입력하세요. *최소 2과목 이상* (종료하려면 '완료' 입력)...");
+        System.out.println("==================================");
+        System.out.println("선택 과목에 해당하는 번호를 입력하세요. (1 ~ 4)");
+        System.out.println("1. 디자인 패턴   ||  2. Spring Security");
+        System.out.println("3. Redis       ||  4. MongoDB");
+        System.out.println("0. 입력 종료");
+        System.out.println("*최소 2과목 이상* (종료하려면 '0' 입력)...");
         System.out.println("선택 과목명: ");
         while (true) {
-            String input = sc.nextLine();
-            if (input.equals("완료")) {
+            int input = sc.nextInt();
+            if (input == 0) {
                 break;
             }
-            elective.add(input);
+            SubjectInfo Subject = SubjectInfo.getChoice(input);
+            elective.add(Subject.getSubjectName());
         }
 
         Student student = new Student(sequence(INDEX_TYPE_STUDENT), studentName, compulsory, elective); // 수강생 인스턴스 생성 예시 코드
