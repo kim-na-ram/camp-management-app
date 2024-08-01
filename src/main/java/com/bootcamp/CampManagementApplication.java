@@ -217,8 +217,75 @@ public class CampManagementApplication {
     // 수강생의 과목별 시험 회차 및 점수 등록
     private static void createScore() {
         String studentId = getStudentId(); // 관리할 수강생 고유 번호
+        int round;
+
+        Score newscore = new Score(sequence(INDEX_TYPE_SCORE));
+        while (true) {
+            System.out.println("관리할 수강생의 번호를 입력하시오...");
+            String stundentID = sc.next();
+            boolean found = false;
+            for (int i = 0; i < studentStore.size(); i++) {
+                if (studentStore.get(i).getStudentName().equals(stundentID)) {
+                    newscore.setStudentId(studentId);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                System.out.println("해당 학생 ID를 찾을 수 없습니다.");
+            }
+            System.out.println("계속하려면 'y'를 입력하세요. 종료하려면 다른 키를 입력하세요");
+            String continueInput = sc.next();
+            if (!continueInput.equalsIgnoreCase("y")) {
+                break;
+            }
+        }
+
+        while (true) {
+            System.out.println("관리할 과목의 번호를 입력하시오...");
+            String subjectID = sc.next();
+            boolean flag = false;
+            for (int i = 0; i < subjectStore.size(); i++) {
+                if (subjectStore.get(i).getSubjectName().equals(subjectID)) {
+                    newscore.setSubjectId(subjectID);
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                System.out.println("해당 과목 ID를 찾을 수 없습니다.");
+            }
+            System.out.println("계속 하려면 'y'를 입력하세요. 종료하려면 다른 키를 입력하세요.");
+            String continueInput = sc.next();
+            if (!continueInput.equalsIgnoreCase("y")) {
+                break;
+            }
+        }
+
+        while (true) {
+            System.out.println("등록할 회차를 입력하시오...");
+            round = sc.nextInt();
+            if (round <= 0 || round > 10) {
+                System.out.println("회차범위: 1~10까지 입력하시오...");
+            } else {
+                newscore.setRound(round);
+                break;
+            }
+        }
+
+        while (true) {
+            System.out.println("등록할 점수를 입력하시오...");
+            int score = sc.nextInt();
+            if (score <= 0 || score > 100) {
+                System.out.println("점수범위: 0~100까지 입력하시오...");
+            } else {
+                newscore.setScore(score);
+                break;
+            }
+        }
+
         System.out.println("시험 점수를 등록합니다...");
-        // 기능 구현
+        scoreStore.add(newscore);
         System.out.println("\n점수 등록 성공!");
     }
 
