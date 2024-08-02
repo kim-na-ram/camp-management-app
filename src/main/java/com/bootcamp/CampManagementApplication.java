@@ -219,7 +219,9 @@ public class CampManagementApplication {
 
     // 수강생의 과목별 시험 회차 및 점수 등록
     private static void createScore() {
+        String subjectType ="";
         int round;
+
 
         Score newscore = new Score(sequence(INDEX_TYPE_SCORE));
         while (true) {
@@ -235,11 +237,7 @@ public class CampManagementApplication {
             }
             if (!found) {
                 System.out.println("해당 학생 ID를 찾을 수 없습니다.");
-                System.out.println("계속하려면 'y'를 입력하세요. 종료하려면 다른 키를 입력하세요");
-                String continueInput = sc.next();
-                if (!continueInput.equalsIgnoreCase("y")) {
-                    break;
-                }
+                if(printEscapeCondition()) return;
             } else break;
         }
 
@@ -250,17 +248,14 @@ public class CampManagementApplication {
             for (int i = 0; i < subjectStore.size(); i++) {
                 if (subjectStore.get(i).getSubjectId().equals(subjectID)) {
                     newscore.setSubjectId(subjectID);
+                    subjectType = subjectStore.get(i).getSubjectType();
                     flag = true;
                     break;
                 }
             }
             if (!flag) {
                 System.out.println("해당 과목 ID를 찾을 수 없습니다.");
-                System.out.println("계속 하려면 'y'를 입력하세요. 종료하려면 다른 키를 입력하세요.");
-                String continueInput = sc.next();
-                if (!continueInput.equalsIgnoreCase("y")) {
-                    break;
-                }
+                if(printEscapeCondition()) return;
             } else break;
         }
 
@@ -269,10 +264,19 @@ public class CampManagementApplication {
             round = sc.nextInt();
             if (round <= 0 || round > 10) {
                 System.out.println("회차범위: 1~10까지 입력하시오...");
+                continue;
+            }
+
+            boolean roundOver = false;
+            for (Score round2 : scoreStore) {
+                if (round2.getRound() == round) {
+                    roundOver = true;
+                    break;
+                }
+            }
+            if (roundOver) {
+                System.out.println("이미 등록되어 있는 회차는 등록할 수 없습니다.");
             } else {
-                // TODO 성현님 : 입력받은 회차랑 일치하는 회차가 존재하는지 확인
-                // 있다면 warning : 이미 있는 회차는 등록할 수 없다~
-                // 없다면 아래 코드 실행
                 newscore.setRound(round);
                 break;
             }
@@ -285,8 +289,7 @@ public class CampManagementApplication {
                 System.out.println("점수범위: 0~100까지 입력하시오...");
             } else {
                 newscore.setScore(score);
-                // TODO 성현님 : 점수 -> 등급으로 변경
-                // 등급도 Score 객체에 저장
+                newscore.setGrade(scoreInToGrade(score, subjectType));
                 break;
             }
         }
