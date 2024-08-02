@@ -7,6 +7,7 @@ import com.bootcamp.model.Subject;
 import com.bootcamp.model.SubjectInfo;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -19,23 +20,20 @@ import java.util.Scanner;
  * 구현에 도움을 주기위한 Base 프로젝트입니다. 자유롭게 이용해주세요!
  */
 public class CampManagementApplication {
+    private static final String INDEX_TYPE_STUDENT = "ST";
+    private static final String INDEX_TYPE_SUBJECT = "SU";
+    private static final String INDEX_TYPE_SCORE = "SC";
     // 데이터 저장소
     private static List<Student> studentStore;
     private static List<Subject> subjectStore;
     private static List<Score> scoreStore;
-
     // 과목 타입
     private static String SUBJECT_TYPE_MANDATORY = "MANDATORY";
     private static String SUBJECT_TYPE_CHOICE = "CHOICE";
-
     // index 관리 필드
     private static int studentIndex;
-    private static final String INDEX_TYPE_STUDENT = "ST";
     private static int subjectIndex;
-    private static final String INDEX_TYPE_SUBJECT = "SU";
     private static int scoreIndex;
-    private static final String INDEX_TYPE_SCORE = "SC";
-
     // 스캐너
     private static Scanner sc = new Scanner(System.in);
 
@@ -207,6 +205,7 @@ public class CampManagementApplication {
 
         Student student = new Student(sequence(INDEX_TYPE_STUDENT), studentName, compulsory, elective); // 수강생 인스턴스 생성 예시 코드
         // 기능 구현
+        studentStore.add(student); //
         System.out.println("수강생 등록 성공!\n");
         System.out.println("현재 등록 하신 수강생 정보: ");
         System.out.println("ID: " + student.getStudentId());
@@ -219,7 +218,22 @@ public class CampManagementApplication {
     private static void inquireStudent() {
         System.out.println("\n수강생 목록을 조회합니다...");
         // 기능 구현
-        System.out.println("\n수강생 목록 조회 성공!");
+        if (studentStore.isEmpty()) {
+            System.out.println("등록된 수강생이 존재하지 않습니다");
+        } else {
+            // 수강생 목록을 sort 를 사용하여 정렬하고
+            // comparator 를 사용해 기준으로 오름차순 정렬
+            studentStore.sort(Comparator.comparing(Student::getStudentName));
+
+            // 정렬된 수강생 목록 출력
+            for (Student student : studentStore) {
+                System.out.println("이름: " + student.getStudentName());
+                System.out.println("ID: " + student.getStudentId());
+                System.out.println(); // 수강생 정보 구분을 위해 빈 줄 추가
+            }
+
+            System.out.println("\n수강생 목록 조회 성공!");
+        }
     }
 
     private static void displayScoreView() {
