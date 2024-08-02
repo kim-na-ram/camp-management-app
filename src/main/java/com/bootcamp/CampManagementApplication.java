@@ -1,11 +1,10 @@
 package com.bootcamp;
 
 
-import com.bootcamp.model.Score;
-import com.bootcamp.model.Student;
-import com.bootcamp.model.Subject;
+import com.bootcamp.model.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -18,23 +17,20 @@ import java.util.Scanner;
  * 구현에 도움을 주기위한 Base 프로젝트입니다. 자유롭게 이용해주세요!
  */
 public class CampManagementApplication {
+    private static final String INDEX_TYPE_STUDENT = "ST";
+    private static final String INDEX_TYPE_SUBJECT = "SU";
+    private static final String INDEX_TYPE_SCORE = "SC";
     // 데이터 저장소
     private static List<Student> studentStore;
     private static List<Subject> subjectStore;
     private static List<Score> scoreStore;
-
     // 과목 타입
     private static String SUBJECT_TYPE_MANDATORY = "MANDATORY";
     private static String SUBJECT_TYPE_CHOICE = "CHOICE";
-
     // index 관리 필드
     private static int studentIndex;
-    private static final String INDEX_TYPE_STUDENT = "ST";
     private static int subjectIndex;
-    private static final String INDEX_TYPE_SUBJECT = "SU";
     private static int scoreIndex;
-    private static final String INDEX_TYPE_SCORE = "SC";
-
     // 스캐너
     private static Scanner sc = new Scanner(System.in);
 
@@ -167,22 +163,126 @@ public class CampManagementApplication {
 
     // 수강생 등록
     private static void createStudent() {
+        List<String> compulsory = new ArrayList<>();
+        List<String> elective = new ArrayList<>();
+        sc.nextLine();
         System.out.println("\n수강생을 등록합니다...");
         System.out.print("수강생 이름 입력: ");
-        String studentName = sc.next();
+        String studentName = sc.nextLine();
         // 기능 구현 (필수 과목, 선택 과목)
+        System.out.println("필수 과목에 해당하는 번호를 입력하세요. (1 ~ 5)");
+        System.out.println("1. Java ||  2. 객체 지향    ||  3. Spring");
+        System.out.println("4. JPA  ||  5. MySQL");
+        System.out.println("0. 입력 종료");
+        System.out.println("*최소 3과목 이상* (종료하려면 '0' 입력)...");
+        System.out.println("필수 과목명: ");
+        while (true) {
+            try {
+                int input = sc.nextInt();
+                if (input == 0) {
+                    if (compulsory.size() >= 3){
+                        break;
+                    }
+                    System.out.println("필수 과목은 최소 3과목 이상 입력해야 합니다.");
+                } else{
+                    SubjectInfo Subject = SubjectInfo.getMandatoryId(input);
+                    compulsory.add(Subject.getSubjectName());
+                }
+            } catch (RuntimeException r) {
+                System.out.println(r.getMessage());
+            }
+        }
+        System.out.println("==================================");
+        System.out.println("선택 과목에 해당하는 번호를 입력하세요. (1 ~ 4)");
+        System.out.println("1. 디자인 패턴   ||  2. Spring Security");
+        System.out.println("3. Redis       ||  4. MongoDB");
+        System.out.println("0. 입력 종료");
+        System.out.println("*최소 2과목 이상* (종료하려면 '0' 입력)...");
+        System.out.println("선택 과목명: ");
+        while (true) {
+            try {
+                int input = sc.nextInt();
+                if (input == 0) {
+                    if (elective.size() >= 2){
+                        break;
+                    }
+                    System.out.println("선택 과목은 최소 2과목 이상 입력해야 합니다.");
+                } else {
+                    SubjectInfo Subject = SubjectInfo.getChoice(input);
+                    elective.add(Subject.getSubjectName());
+                }
+            } catch (RuntimeException r) {
+                System.out.println(r.getMessage());
+            }
+        }
 
-        Student student = new Student(sequence(INDEX_TYPE_STUDENT), studentName); // 수강생 인스턴스 생성 예시 코드
+        Student student = new Student(sequence(INDEX_TYPE_STUDENT), studentName, compulsory, elective); // 수강생 인스턴스 생성 예시 코드
         // 기능 구현
+        studentStore.add(student); //
         System.out.println("수강생 등록 성공!\n");
+        System.out.println("현재 등록 하신 수강생 정보: ");
+        System.out.println("ID: " + student.getStudentId());
+        System.out.println("이름: " + student.getStudentName());
+        System.out.println("필수 과목: " + student.getCompulsory());
+        System.out.println("선택 과목: " + student.getElective());
     }
 
-    // 수강생 목록 조회
-    private static void inquireStudent() {
-        System.out.println("\n수강생 목록을 조회합니다...");
+    private static void inquireStudent() {                 //예외처리 생각해보기
+        System.out.println("1. 수강생 전체 조회");
+        System.out.println("2. 수강생 ID 조회" );
+        System.out.println("3. 수강생 이름 조회");
+
         // 기능 구현
-        System.out.println("\n수강생 목록 조회 성공!");
+        int select = sc.nextInt();
+
+        if (select == 1) {
+            System.out.println("\n수강생 목록을 조회합니다...");
+            if (studentStore.isEmpty()) {
+                System.out.println("등록된 수강생이 존재하지 않습니다");
+            } else {
+                // 수강생 목록을 sort 를 사용하여 정렬하고
+                // comparator 를 사용해 기준으로 오름차순 정렬
+                studentStore.sort(Comparator.comparing(Student::getStudentName));
+
+                // 정렬된 수강생 목록 출력
+                for (Student student : studentStore) {
+                    System.out.println("이름: " + student.getStudentName());
+                    System.out.println("ID: " + student.getStudentId());
+                    System.out.println(); // 수강생 정보 구분을 위해 빈 줄 추가
+                }
+
+                System.out.println("\n수강생 목록 조회 성공!");
+            }
+        } else if (select == 2) {
+            System.out.println("조회할 수강생의 ID를 입력해 주세요: ");
+            String studentId = sc.next();
+
+            for (Student student : studentStore) {
+                if (student.getStudentId().equalsIgnoreCase(studentId)) {
+                    System.out.println("이름: " + student.getStudentName());
+                    System.out.println("ID: " + student.getStudentId());
+                    System.out.println();
+                } else {
+                    System.out.println("등록된 수강생이 존재하지 않습니다");
+                }
+            }
+        } else if (select == 3) {
+            System.out.println("조회할 수강생의 이름을 입력해 주세요: ");
+            String studentName = sc.next();
+
+            for (Student student : studentStore) {
+                if (student.getStudentName().equalsIgnoreCase(studentName)) {
+                    System.out.println("이름: " + student.getStudentName());
+                    System.out.println("ID: " + student.getStudentId());
+                    System.out.println();
+                } else {
+                    System.out.println("등록된 수강생이 존재하지 않습니다");
+
+                }
+            }
+        }
     }
+
 
     private static void displayScoreView() {
         boolean flag = true;
