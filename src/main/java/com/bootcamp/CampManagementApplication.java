@@ -4,9 +4,11 @@ package com.bootcamp;
 import com.bootcamp.model.Score;
 import com.bootcamp.model.Student;
 import com.bootcamp.model.Subject;
+import com.bootcamp.utils.Grade;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 /**
@@ -21,7 +23,7 @@ public class CampManagementApplication {
     // 데이터 저장소
     private static List<Student> studentStore;
     private static List<Subject> subjectStore;
-    private static List<Score> scoreStore;
+    private static ArrayList<Score> scoreStore;
 
     // 과목 타입
     private static String SUBJECT_TYPE_MANDATORY = "MANDATORY";
@@ -43,6 +45,8 @@ public class CampManagementApplication {
         try {
             displayMainView();
         } catch (Exception e) {
+            // TODO 개발 완료 후 삭제 예정, 에러 확인용
+            e.printStackTrace();
             System.out.println("\n오류 발생!\n프로그램을 종료합니다.");
         }
     }
@@ -292,19 +296,107 @@ public class CampManagementApplication {
     // 수강생의 과목별 회차 점수 수정
     private static void updateRoundScoreBySubject() {
         String studentId = getStudentId(); // 관리할 수강생 고유 번호
-        // 기능 구현 (수정할 과목 및 회차, 점수)
+        String subjectId, subjectType;
+        int round, subjectScore;
+        int scoreIdx = 0;
+
+        Score findScore = null;
+
+        while (true) {
+            System.out.println("수정할 과목을 입력하시오");
+            String subjectName = sc.next();
+
+            Optional<Subject> subject = subjectStore.stream()
+                    .filter(sbj -> sbj.getSubjectName().equals(subjectName))
+                    .findFirst();
+
+            if (subject.isEmpty()) {
+                System.out.println("해당 과목은 존재하지 않습니다.");
+            } else {
+                subjectId = subject.get().getSubjectId();
+                subjectType = subject.get().getSubjectType();
+                break;
+            }
+        }
+
+        while (true) {
+            System.out.println("수정할 회차를 입력하시오");
+            round = sc.nextInt();
+
+            if (round <= 0 || round > 10) {
+                System.out.println("회차는 1 ~ 10까지만 입력 가능합니다.");
+            } else {
+                for(int i = 0; i < scoreStore.size(); i++) {
+                    Score score = scoreStore.get(i);
+                    if (score.getStudentId().equals(studentId)
+                    && score.getSubjectId().equals(subjectId)
+                    && score.getRound() == round) {
+                        scoreIdx = i;
+                        findScore = score;
+                    }
+                }
+
+                if(findScore == null) System.out.println("해당 회차는 존재하지 않습니다.");
+                else break;
+            }
+        }
+
+        while (true) {
+            System.out.println("수정할 점수를 입력하시오");
+            subjectScore = sc.nextInt();
+
+            if (subjectScore <= 0 || subjectScore > 100) {
+                System.out.println("점수는 1 ~ 100까지만 입력 가능합니다.");
+            } else break;
+        }
+
         System.out.println("시험 점수를 수정합니다...");
-        // 기능 구현
+
+        findScore.setScore(subjectScore);
+        findScore.setGrade(scoreInToGrade(subjectScore, subjectType));
+
+        scoreStore.set(scoreIdx, findScore);
+
         System.out.println("\n점수 수정 성공!");
     }
 
     // 수강생의 특정 과목 회차별 등급 조회
     private static void inquireRoundGradeBySubject() {
         String studentId = getStudentId(); // 관리할 수강생 고유 번호
-        // 기능 구현 (조회할 특정 과목)
+
+        String subjectId;
+        while (true) {
+            System.out.println("등급을 확인할 과목을 입력하시오");
+            String subjectName = sc.next();
+
+            Optional<Subject> subject = subjectStore.stream()
+                    .filter(sbj -> sbj.getSubjectName().equals(subjectName))
+                    .findFirst();
+
+            if (subject.isEmpty()) {
+                System.out.println("해당 과목은 존재하지 않습니다.");
+            } else {
+                subjectId = subject.get().getSubjectId();
+                break;
+            }
+        }
+
         System.out.println("회차별 등급을 조회합니다...");
-        // 기능 구현
+
+        List<Score> roundList = scoreStore.stream().filter(sc -> sc.getStudentId().equals(studentId)
+                && sc.getSubjectId().equals(subjectId)).toList();
+
+        roundList.forEach(score -> System.out.println(score.getRound() + "회차 등급 : " + score.getGrade()));
+
         System.out.println("\n등급 조회 성공!");
     }
 
+    // score 와 type 을 통해 등급을 반환
+    private static Grade scoreInToGrade(int score, String type) {
+        if (type.equals(SUBJECT_TYPE_MANDATORY)) {
+            return Grade.mandatorySubjectGrade(score);
+        } else {
+            return Grade.choiceSubjectGrade(score);
+        }
+    }
 }
