@@ -23,7 +23,7 @@ public enum SubjectInfo {
         return subjectName;
     }
 
-    public static SubjectInfo getMandatoryId(int subjectId) {
+    public static SubjectInfo getMandatoryId(int subjectId) throws RuntimeException{
         for(SubjectInfo id : values()) {
             if(id.subjectId == subjectId && subjectId < 6){
                 return id;

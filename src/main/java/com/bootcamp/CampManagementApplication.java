@@ -1,10 +1,7 @@
 package com.bootcamp;
 
 
-import com.bootcamp.model.Score;
-import com.bootcamp.model.Student;
-import com.bootcamp.model.Subject;
-import com.bootcamp.model.SubjectInfo;
+import com.bootcamp.model.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -180,12 +177,20 @@ public class CampManagementApplication {
         System.out.println("*최소 3과목 이상* (종료하려면 '0' 입력)...");
         System.out.println("필수 과목명: ");
         while (true) {
-            int input = sc.nextInt();
-            if (input == 0) {
-                break;
+            try {
+                int input = sc.nextInt();
+                if (input == 0) {
+                    if (compulsory.size() >= 3){
+                        break;
+                    }
+                    System.out.println("필수 과목은 최소 3과목 이상 입력해야 합니다.");
+                } else{
+                    SubjectInfo Subject = SubjectInfo.getMandatoryId(input);
+                    compulsory.add(Subject.getSubjectName());
+                }
+            } catch (RuntimeException r) {
+                System.out.println(r.getMessage());
             }
-            SubjectInfo Subject = SubjectInfo.getMandatoryId(input);
-            compulsory.add(Subject.getSubjectName());
         }
         System.out.println("==================================");
         System.out.println("선택 과목에 해당하는 번호를 입력하세요. (1 ~ 4)");
@@ -195,12 +200,20 @@ public class CampManagementApplication {
         System.out.println("*최소 2과목 이상* (종료하려면 '0' 입력)...");
         System.out.println("선택 과목명: ");
         while (true) {
-            int input = sc.nextInt();
-            if (input == 0) {
-                break;
+            try {
+                int input = sc.nextInt();
+                if (input == 0) {
+                    if (elective.size() >= 2){
+                        break;
+                    }
+                    System.out.println("선택 과목은 최소 2과목 이상 입력해야 합니다.");
+                } else {
+                    SubjectInfo Subject = SubjectInfo.getChoice(input);
+                    elective.add(Subject.getSubjectName());
+                }
+            } catch (RuntimeException r) {
+                System.out.println(r.getMessage());
             }
-            SubjectInfo Subject = SubjectInfo.getChoice(input);
-            elective.add(Subject.getSubjectName());
         }
 
         Student student = new Student(sequence(INDEX_TYPE_STUDENT), studentName, compulsory, elective); // 수강생 인스턴스 생성 예시 코드
