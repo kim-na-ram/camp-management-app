@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="941b03f8-6dd5-4589-95cd-a8587080da1e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/bootcamp/model/SubjectInfo.java" afterDir="false" />
+    <list default="true" id="941b03f8-6dd5-4589-95cd-a8587080da1e" name="Changes" comment="[fix] : Enum클래스를 생성 후 필수 과목, 선택 과목 기능 수정">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/com/bootcamp/CampManagementApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/com/bootcamp/CampManagementApplication.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/bootcamp/CampManagementApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/bootcamp/CampManagementApplication.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,7 +22,12 @@
       <state>
         <projects_view>
           <tree_state>
-            <expand />
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="camp-management-app" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
             <select />
           </tree_state>
         </projects_view>
@@ -63,22 +65,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.CampManagementApplication.executor": "Run",
-    "Gradle.camp-management-app [:CampManagementApplication.main()].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feature/student",
-    "kotlin-language-version-configured": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "File.Encoding",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.CampManagementApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.camp-management-app [:CampManagementApplication.main()].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/student&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;File.Encoding&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -100,8 +102,21 @@
       <workItem from="1722481176030" duration="2342000" />
       <workItem from="1722490712310" duration="1381000" />
       <workItem from="1722492115013" duration="264000" />
-      <workItem from="1722492393923" duration="13639000" />
+      <workItem from="1722492393923" duration="15780000" />
+      <workItem from="1722517292377" duration="119000" />
+      <workItem from="1722517424248" duration="6000" />
+      <workItem from="1722517557745" duration="700000" />
+      <workItem from="1722561069035" duration="1561000" />
     </task>
+    <task id="LOCAL-00001" summary="[fix] : Enum클래스를 생성 후 필수 과목, 선택 과목 기능 수정">
+      <option name="closed" value="true" />
+      <created>1722513144322</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1722513144322</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -117,5 +132,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="[fix] : Enum클래스를 생성 후 필수 과목, 선택 과목 기능 수정" />
+    <option name="LAST_COMMIT_MESSAGE" value="[fix] : Enum클래스를 생성 후 필수 과목, 선택 과목 기능 수정" />
   </component>
 </project>
