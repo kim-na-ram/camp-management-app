@@ -6,10 +6,7 @@ import com.bootcamp.model.Student;
 import com.bootcamp.model.Subject;
 import com.bootcamp.utils.Grade;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Notification
@@ -309,6 +306,16 @@ public class CampManagementApplication {
         Score findScore = null;
 
         while (true) {
+            if (!isExistStudentId(studentId)) {
+                System.out.println("해당 학생 ID를 찾을 수 없습니다.");
+                if(printEscapeCondition()) return;
+                else studentId = getStudentId();
+            } else {
+                break;
+            }
+        }
+
+        while (true) {
             System.out.println("수정할 과목을 입력하시오");
             String subjectName = sc.next();
 
@@ -318,6 +325,7 @@ public class CampManagementApplication {
 
             if (subject.isEmpty()) {
                 System.out.println("해당 과목은 존재하지 않습니다.");
+                if(printEscapeCondition()) return;
             } else {
                 subjectId = subject.get().getSubjectId();
                 subjectType = subject.get().getSubjectType();
@@ -332,17 +340,20 @@ public class CampManagementApplication {
             if (round <= 0 || round > 10) {
                 System.out.println("회차는 1 ~ 10까지만 입력 가능합니다.");
             } else {
-                for(int i = 0; i < scoreStore.size(); i++) {
+                for (int i = 0; i < scoreStore.size(); i++) {
                     Score score = scoreStore.get(i);
                     if (score.getStudentId().equals(studentId)
-                    && score.getSubjectId().equals(subjectId)
-                    && score.getRound() == round) {
+                            && score.getSubjectId().equals(subjectId)
+                            && score.getRound() == round) {
                         scoreIdx = i;
                         findScore = score;
                     }
                 }
 
-                if(findScore == null) System.out.println("해당 회차는 존재하지 않습니다.");
+                if (findScore == null) {
+                    System.out.println("해당 회차는 존재하지 않습니다.");
+                    if(printEscapeCondition()) return;
+                }
                 else break;
             }
         }
@@ -353,6 +364,7 @@ public class CampManagementApplication {
 
             if (subjectScore <= 0 || subjectScore > 100) {
                 System.out.println("점수는 1 ~ 100까지만 입력 가능합니다.");
+                if(printEscapeCondition()) return;
             } else break;
         }
 
@@ -369,8 +381,18 @@ public class CampManagementApplication {
     // 수강생의 특정 과목 회차별 등급 조회
     private static void inquireRoundGradeBySubject() {
         String studentId = getStudentId(); // 관리할 수강생 고유 번호
-
         String subjectId;
+
+        while (true) {
+            if (!isExistStudentId(studentId)) {
+                System.out.println("해당 학생 ID를 찾을 수 없습니다.");
+                if(printEscapeCondition()) return;
+                else studentId = getStudentId();
+            } else {
+                break;
+            }
+        }
+
         while (true) {
             System.out.println("등급을 확인할 과목을 입력하시오");
             String subjectName = sc.next();
@@ -381,6 +403,7 @@ public class CampManagementApplication {
 
             if (subject.isEmpty()) {
                 System.out.println("해당 과목은 존재하지 않습니다.");
+                if(printEscapeCondition()) return;
             } else {
                 subjectId = subject.get().getSubjectId();
                 break;
@@ -389,12 +412,28 @@ public class CampManagementApplication {
 
         System.out.println("회차별 등급을 조회합니다...");
 
-        List<Score> roundList = scoreStore.stream().filter(sc -> sc.getStudentId().equals(studentId)
+        // capturing lambda 로 인한 effectively final 변수 선언
+        String finalStudentId = studentId;
+        List<Score> roundList = scoreStore.stream().filter(sc -> sc.getStudentId().equals(finalStudentId)
                 && sc.getSubjectId().equals(subjectId)).toList();
 
         roundList.forEach(score -> System.out.println(score.getRound() + "회차 등급 : " + score.getGrade()));
 
         System.out.println("\n등급 조회 성공!");
+    }
+
+    private static boolean isExistStudentId(String studentId) {
+        Optional<Student> student = studentStore.stream()
+                .filter(std -> std.getStudentId().equals(studentId))
+                .findFirst();
+
+        return student.isPresent();
+    }
+
+    private static boolean printEscapeCondition() {
+        System.out.println("계속하려면 'y'를 입력하세요. 종료하려면 다른 키를 입력하세요");
+        String continueInput = sc.next();
+        return !continueInput.equalsIgnoreCase("y");
     }
 
     // score 와 type 을 통해 등급을 반환
