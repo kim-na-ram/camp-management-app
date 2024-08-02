@@ -45,7 +45,7 @@ public class CampManagementApplication {
         try {
             displayMainView();
         } catch (Exception e) {
-            // TODO 개발 완료 후 삭제 예정, 에러 확인용
+            // TODO 삭제예정 : 에러 확인용
             e.printStackTrace();
             System.out.println("\n오류 발생!\n프로그램을 종료합니다.");
         }
@@ -54,6 +54,8 @@ public class CampManagementApplication {
     // 초기 데이터 생성
     private static void setInitData() {
         studentStore = new ArrayList<>();
+        // TODO 삭제예정 : 테스트용
+        studentStore.add(new Student(sequence(INDEX_TYPE_STUDENT), "테스터"));
         subjectStore = List.of(
                 new Subject(
                         sequence(INDEX_TYPE_SUBJECT),
@@ -220,29 +222,28 @@ public class CampManagementApplication {
 
     // 수강생의 과목별 시험 회차 및 점수 등록
     private static void createScore() {
-        String studentId = getStudentId(); // 관리할 수강생 고유 번호
         int round;
 
         Score newscore = new Score(sequence(INDEX_TYPE_SCORE));
         while (true) {
             System.out.println("관리할 수강생의 번호를 입력하시오...");
-            String stundentID = sc.next();
+            String studentID = sc.next();
             boolean found = false;
             for (int i = 0; i < studentStore.size(); i++) {
-                if (studentStore.get(i).getStudentName().equals(stundentID)) {
-                    newscore.setStudentId(studentId);
+                if (studentStore.get(i).getStudentId().equals(studentID)) {
+                    newscore.setStudentId(studentID);
                     found = true;
                     break;
                 }
             }
             if (!found) {
                 System.out.println("해당 학생 ID를 찾을 수 없습니다.");
-            }
-            System.out.println("계속하려면 'y'를 입력하세요. 종료하려면 다른 키를 입력하세요");
-            String continueInput = sc.next();
-            if (!continueInput.equalsIgnoreCase("y")) {
-                break;
-            }
+                System.out.println("계속하려면 'y'를 입력하세요. 종료하려면 다른 키를 입력하세요");
+                String continueInput = sc.next();
+                if (!continueInput.equalsIgnoreCase("y")) {
+                    break;
+                }
+            } else break;
         }
 
         while (true) {
@@ -250,7 +251,7 @@ public class CampManagementApplication {
             String subjectID = sc.next();
             boolean flag = false;
             for (int i = 0; i < subjectStore.size(); i++) {
-                if (subjectStore.get(i).getSubjectName().equals(subjectID)) {
+                if (subjectStore.get(i).getSubjectId().equals(subjectID)) {
                     newscore.setSubjectId(subjectID);
                     flag = true;
                     break;
@@ -258,12 +259,12 @@ public class CampManagementApplication {
             }
             if (!flag) {
                 System.out.println("해당 과목 ID를 찾을 수 없습니다.");
-            }
-            System.out.println("계속 하려면 'y'를 입력하세요. 종료하려면 다른 키를 입력하세요.");
-            String continueInput = sc.next();
-            if (!continueInput.equalsIgnoreCase("y")) {
-                break;
-            }
+                System.out.println("계속 하려면 'y'를 입력하세요. 종료하려면 다른 키를 입력하세요.");
+                String continueInput = sc.next();
+                if (!continueInput.equalsIgnoreCase("y")) {
+                    break;
+                }
+            } else break;
         }
 
         while (true) {
@@ -272,6 +273,9 @@ public class CampManagementApplication {
             if (round <= 0 || round > 10) {
                 System.out.println("회차범위: 1~10까지 입력하시오...");
             } else {
+                // TODO 성현님 : 입력받은 회차랑 일치하는 회차가 존재하는지 확인
+                // 있다면 warning : 이미 있는 회차는 등록할 수 없다~
+                // 없다면 아래 코드 실행
                 newscore.setRound(round);
                 break;
             }
@@ -284,6 +288,8 @@ public class CampManagementApplication {
                 System.out.println("점수범위: 0~100까지 입력하시오...");
             } else {
                 newscore.setScore(score);
+                // TODO 성현님 : 점수 -> 등급으로 변경
+                // 등급도 Score 객체에 저장
                 break;
             }
         }
