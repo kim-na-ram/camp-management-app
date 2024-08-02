@@ -227,27 +227,62 @@ public class CampManagementApplication {
         System.out.println("선택 과목: " + student.getElective());
     }
 
-    // 수강생 목록 조회
-    private static void inquireStudent() {
-        System.out.println("\n수강생 목록을 조회합니다...");
+    private static void inquireStudent() {                 //예외처리 생각해보기
+        System.out.println("1. 수강생 전체 조회");
+        System.out.println("2. 수강생 ID 조회" );
+        System.out.println("3. 수강생 이름 조회");
+
         // 기능 구현
-        if (studentStore.isEmpty()) {
-            System.out.println("등록된 수강생이 존재하지 않습니다");
-        } else {
-            // 수강생 목록을 sort 를 사용하여 정렬하고
-            // comparator 를 사용해 기준으로 오름차순 정렬
-            studentStore.sort(Comparator.comparing(Student::getStudentName));
+        int select = sc.nextInt();
 
-            // 정렬된 수강생 목록 출력
-            for (Student student : studentStore) {
-                System.out.println("이름: " + student.getStudentName());
-                System.out.println("ID: " + student.getStudentId());
-                System.out.println(); // 수강생 정보 구분을 위해 빈 줄 추가
+        if (select == 1) {
+            System.out.println("\n수강생 목록을 조회합니다...");
+            if (studentStore.isEmpty()) {
+                System.out.println("등록된 수강생이 존재하지 않습니다");
+            } else {
+                // 수강생 목록을 sort 를 사용하여 정렬하고
+                // comparator 를 사용해 기준으로 오름차순 정렬
+                studentStore.sort(Comparator.comparing(Student::getStudentName));
+
+                // 정렬된 수강생 목록 출력
+                for (Student student : studentStore) {
+                    System.out.println("이름: " + student.getStudentName());
+                    System.out.println("ID: " + student.getStudentId());
+                    System.out.println(); // 수강생 정보 구분을 위해 빈 줄 추가
+                }
+
+                System.out.println("\n수강생 목록 조회 성공!");
             }
+        } else if (select == 2) {
+            System.out.println("조회할 수강생의 ID를 입력해 주세요: ");
+            String studentId = sc.next();
 
-            System.out.println("\n수강생 목록 조회 성공!");
+            for (Student student : studentStore) {
+                if (student.getStudentId().equalsIgnoreCase(studentId)) {
+                    System.out.println("이름: " + student.getStudentName());
+                    System.out.println("ID: " + student.getStudentId());
+                    System.out.println();
+                } else {
+                    System.out.println("등록된 수강생이 존재하지 않습니다");
+                }
+            }
+        } else if (select == 3) {
+            System.out.println("조회할 수강생의 이름을 입력해 주세요: ");
+            String studentName = sc.next();
+
+            for (Student student : studentStore) {
+                if (student.getStudentName().equalsIgnoreCase(studentName)) {
+                    System.out.println("이름: " + student.getStudentName());
+                    System.out.println("ID: " + student.getStudentId());
+                    System.out.println();
+                } else {
+                    System.out.println("등록된 수강생이 존재하지 않습니다");
+
+                }
+            }
         }
     }
+
 
     private static void displayScoreView() {
         boolean flag = true;
