@@ -22,8 +22,6 @@ public class CampManagementApplication {
     // index 관리 필드
     private static int studentIndex;
     private static final String INDEX_TYPE_STUDENT = "ST";
-    private static int subjectIndex;
-    private static final String INDEX_TYPE_SUBJECT = "SU";
     private static int scoreIndex;
     private static final String INDEX_TYPE_SCORE = "SC";
 
@@ -53,10 +51,6 @@ public class CampManagementApplication {
             case INDEX_TYPE_STUDENT -> {
                 studentIndex++;
                 return INDEX_TYPE_STUDENT + studentIndex;
-            }
-            case INDEX_TYPE_SUBJECT -> {
-                subjectIndex++;
-                return INDEX_TYPE_SUBJECT + subjectIndex;
             }
             default -> {
                 scoreIndex++;
