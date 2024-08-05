@@ -251,7 +251,7 @@ public class CampManagementApplication {
                     System.out.println(); // 수강생 정보 구분을 위해 빈 줄 추가
                 }
 
-                System.out.println("\n수강생 목록 조회 성공!");
+                System.out.println("수강생 목록 조회 성공!");
             }
         } else if (select == 2) {
             System.out.println("조회할 수강생의 ID를 입력해 주세요: ");
@@ -259,28 +259,28 @@ public class CampManagementApplication {
 
             for (Student student : studentStore) {
                 if (student.getStudentId().equalsIgnoreCase(studentId)) {
+                    System.out.println();
                     System.out.println("이름: " + student.getStudentName());
                     System.out.println("ID: " + student.getStudentId());
-                    System.out.println();
-                } else {
+
+                } else if (studentId.isEmpty()) {
                     System.out.println("등록된 수강생이 존재하지 않습니다");
                 }
             }
         } else if (select == 3) {
             System.out.println("조회할 수강생의 이름을 입력해 주세요: ");
             String studentName = sc.next();
-
+            boolean flag = false;
             for (Student student : studentStore) {
                 if (student.getStudentName().equalsIgnoreCase(studentName)) {
+                    System.out.println();
                     System.out.println("이름: " + student.getStudentName());
                     System.out.println("ID: " + student.getStudentId());
-                    System.out.println();
-                } else {
+                } else if (studentName.isEmpty()) {
                     System.out.println("등록된 수강생이 존재하지 않습니다");
-
                 }
             }
-        }
+            }
     }
 
 
