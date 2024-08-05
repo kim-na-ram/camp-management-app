@@ -31,6 +31,7 @@ public class CampManagementApplication {
 
     public static void main(String[] args) {
         setInitData();
+        setTestData();
         try {
             displayMainView();
         } catch (Exception e) {
@@ -554,5 +555,72 @@ public class CampManagementApplication {
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * 테스트 데이터
+     */
+    private static void setTestData() {
+        studentStore.addAll(
+                List.of(
+                        new Student(
+                                sequence(INDEX_TYPE_STUDENT),
+                                "tester1",
+                                List.of("1", "2", "3"),
+                                List.of("1", "2")
+                        ),
+                        new Student(
+                                sequence(INDEX_TYPE_STUDENT),
+                                "tester2",
+                                List.of("3", "4", "5"),
+                                List.of("3", "4")
+                        )
+                )
+        );
+
+        scoreStore.addAll(
+                List.of(
+                        new Score(
+                                sequence(INDEX_TYPE_SCORE),
+                                "ST1",
+                                "SU1",
+                                64,
+                                1,
+                                Grade.F
+                        ),
+                        new Score(
+                                sequence(INDEX_TYPE_SCORE),
+                                "ST1",
+                                "SU1",
+                                96,
+                                2,
+                                Grade.A
+                        ),
+                        new Score(
+                                sequence(INDEX_TYPE_SCORE),
+                                "ST1",
+                                "SU6",
+                                95,
+                                1,
+                                Grade.A
+                        ),
+                        new Score(
+                                sequence(INDEX_TYPE_SCORE),
+                                "ST2",
+                                "SU2",
+                                75,
+                                1,
+                                Grade.D
+                        ),
+                        new Score(
+                                sequence(INDEX_TYPE_SCORE),
+                                "ST2",
+                                "SU9",
+                                80,
+                                1,
+                                Grade.B
+                        )
+                )
+        );
     }
 }
