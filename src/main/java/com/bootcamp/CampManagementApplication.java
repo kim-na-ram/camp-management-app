@@ -332,14 +332,16 @@ public class CampManagementApplication {
                 continue;
             }
 
-            boolean roundOver = false;
-            for (Score round2 : scoreStore) {
-                if (round2.getRound() == round) {
-                    roundOver = true;
+            boolean roundExists = false;
+            for (Score existingScore : scoreStore) {
+                if (existingScore.getStudentId().equals(newscore.getStudentId()) &&
+                        existingScore.getSubjectId().equals(newscore.getSubjectId()) &&
+                        existingScore.getRound() == round) {
+                    roundExists = true;
                     break;
                 }
             }
-            if (roundOver) {
+            if (roundExists) {
                 System.out.println("이미 등록되어 있는 회차는 등록할 수 없습니다.");
             } else {
                 newscore.setRound(round);
