@@ -313,7 +313,7 @@ public class CampManagementApplication {
         while (true) {
             SubjectInfo.printSubjectInfo();
             System.out.println("관리할 과목의 번호를 입력하시오...");
-            int subjectID = sc.nextInt();
+            String subjectID = sc.next();
             if (SubjectInfo.isExistSubjectId(subjectID)) {
                 newscore.setSubjectId(subjectID);
                 subjectType = SubjectInfo.getSubjectType(subjectID);
@@ -367,7 +367,7 @@ public class CampManagementApplication {
     // 수강생의 과목별 회차 점수 수정
     private static void updateRoundScoreBySubject() {
         String studentId = getStudentId(); // 관리할 수강생 고유 번호
-        int subjectId;
+        String subjectId;
         SubjectType subjectType;
         int round, subjectScore, scoreIdx = 0;
 
@@ -386,11 +386,11 @@ public class CampManagementApplication {
         while (true) {
             SubjectInfo.printSubjectInfo();
             System.out.println("수정할 과목의 번호를 입력하시오");
-            subjectId = sc.nextInt();
+            subjectId = sc.next();
 
             // capturing lambda 를 위한 effectively final 변수 선언
-            int finalSubjectId = subjectId;
-            if (scoreStore.stream().noneMatch(sc -> sc.getSubjectId() == finalSubjectId)) {
+            String finalSubjectId = subjectId;
+            if (scoreStore.stream().noneMatch(sc -> sc.getSubjectId().equals(finalSubjectId))) {
                 System.out.println("해당 과목의 점수는 존재하지 않습니다.");
                 if (printEscapeCondition()) return;
             } else {
@@ -446,7 +446,7 @@ public class CampManagementApplication {
     // 수강생의 특정 과목 회차별 등급 조회
     private static void inquireRoundGradeBySubject() {
         String studentId = getStudentId(); // 관리할 수강생 고유 번호
-        int subjectId;
+        String subjectId;
 
         while (true) {
             if (!isExistStudentId(studentId)) {
@@ -461,11 +461,11 @@ public class CampManagementApplication {
         while (true) {
             SubjectInfo.printSubjectInfo();
             System.out.println("등급을 확인할 과목의 번호 입력하시오");
-            subjectId = sc.nextInt();
+            subjectId = sc.next();
 
             // capturing lambda 를 위한 effectively final 변수 선언
-            int finalSubjectId = subjectId;
-            if (scoreStore.stream().noneMatch(sc -> sc.getSubjectId() == finalSubjectId)) {
+            String finalSubjectId = subjectId;
+            if (scoreStore.stream().noneMatch(sc -> sc.getSubjectId().equals(finalSubjectId))) {
                 System.out.println("해당 과목의 점수는 존재하지 않습니다.");
                 if (printEscapeCondition()) return;
             } else break;
@@ -475,10 +475,10 @@ public class CampManagementApplication {
 
         // capturing lambda 로 인한 effectively final 변수 선언
         String finalStudentId = studentId;
-        int finalSubjectId = subjectId;
+        String finalSubjectId = subjectId;
 
         List<Score> roundList = scoreStore.stream().filter(sc -> sc.getStudentId().equals(finalStudentId)
-                && sc.getSubjectId() == finalSubjectId).toList();
+                && sc.getSubjectId().equals(finalSubjectId)).toList();
 
         roundList.forEach(score -> System.out.println(score.getRound() + "회차 등급 : " + score.getGrade()));
 
