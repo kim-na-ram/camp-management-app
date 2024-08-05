@@ -1,5 +1,6 @@
 package com.bootcamp;
 
+import com.bootcamp.exception.ManagementException;
 import com.bootcamp.model.*;
 import com.bootcamp.utils.Grade;
 import com.bootcamp.utils.SubjectType;
@@ -276,24 +277,20 @@ public class CampManagementApplication {
         }
     }
 
-    private static String getStudentId() {
-        System.out.print("\n관리할 수강생의 번호를 입력하시오...");
-        return sc.next();
-    }
-
     // 수강생의 과목별 시험 회차 및 점수 등록
     private static void createScore() {
-        SubjectType subjectType = null;
+        SubjectType subjectType;
+        String studentId;
         int round;
 
         Score newscore = new Score(sequence(INDEX_TYPE_SCORE));
         while (true) {
             System.out.println("관리할 수강생의 번호를 입력하시오...");
-            String studentID = sc.next();
+            studentId = sc.next();
             boolean found = false;
             for (int i = 0; i < studentStore.size(); i++) {
-                if (studentStore.get(i).getStudentId().equals(studentID)) {
-                    newscore.setStudentId(studentID);
+                if (studentStore.get(i).getStudentId().equals(studentId)) {
+                    newscore.setStudentId(studentId);
                     found = true;
                     break;
                 }
@@ -305,17 +302,22 @@ public class CampManagementApplication {
         }
 
         while (true) {
-            SubjectInfo.printSubjectInfo();
-            System.out.println("관리할 과목의 번호를 입력하시오...");
-            String subjectID = sc.next();
-            if (SubjectInfo.isExistSubjectId(subjectID)) {
-                newscore.setSubjectId(subjectID);
-                subjectType = SubjectInfo.getSubjectType(subjectID);
-                break;
-            }
+            try {
+                SubjectInfo.printSubjectInfo();
+                System.out.println("관리할 과목의 고유번호를 입력하시오...");
+                Optional<String> student = validateSubjectId(studentId);
 
-            System.out.println("해당 과목 ID를 찾을 수 없습니다.");
-            if (printEscapeCondition()) return;
+                if (student.isPresent()) {
+                    newscore.setSubjectId(student.get());
+                    subjectType = SubjectInfo.getSubjectType(student.get());
+                    break;
+                }
+
+                System.out.println("해당 과목은 선택되지 않아 등록할 수 없습니다.");
+                if (printEscapeCondition()) return;
+            } catch (ManagementException e) {
+                System.out.println(e.getMessage());
+            }
         }
 
         while (true) {
@@ -344,15 +346,16 @@ public class CampManagementApplication {
         }
 
         while (true) {
-            System.out.println("등록할 점수를 입력하시오...");
-            int score = sc.nextInt();
-            if (score <= 0 || score > 100) {
-                System.out.println("점수범위: 0~100까지 입력하시오...");
-            } else {
-                newscore.setScore(score);
-                newscore.setGrade(scoreInToGrade(score, subjectType));
+            System.out.println("등록할 점수를 입력하시오");
+            Optional<Integer> score = validateScore();
+
+            if(score.isPresent()) {
+                newscore.setScore(score.get());
+                newscore.setGrade(scoreInToGrade(score.get(), subjectType));
                 break;
             }
+
+            if(printEscapeCondition()) return;
         }
 
         System.out.println("시험 점수를 등록합니다...");
@@ -362,77 +365,81 @@ public class CampManagementApplication {
 
     // 수강생의 과목별 회차 점수 수정
     private static void updateRoundScoreBySubject() {
-        String studentId = getStudentId(); // 관리할 수강생 고유 번호
-        String subjectId;
-        SubjectType subjectType;
-        int round, subjectScore, scoreIdx = 0;
+        String studentId, subjectId;
+        int round, scoreIdx = 0;
 
         Score findScore = null;
 
         while (true) {
-            if (!isExistStudentId(studentId)) {
-                System.out.println("해당 학생 ID를 찾을 수 없습니다.");
-                if (printEscapeCondition()) return;
-                else studentId = getStudentId();
-            } else {
+            System.out.println("관리할 수강생의 고유번호를 입력하시오.");
+            Optional<String> student = validateStudentId();
+
+            if (student.isPresent()) {
+                studentId = student.get();
                 break;
             }
+
+            if (printEscapeCondition()) return;
         }
 
         while (true) {
             SubjectInfo.printSubjectInfo();
-            System.out.println("수정할 과목의 번호를 입력하시오");
-            subjectId = sc.next();
+            System.out.println("수정할 과목의 고유번호를 입력하시오.");
+            Optional<String> subject = validateSubjectIdIsExistScoreList(studentId);
 
-            // capturing lambda 를 위한 effectively final 변수 선언
-            String finalSubjectId = subjectId;
-            if (scoreStore.stream().noneMatch(sc -> sc.getSubjectId().equals(finalSubjectId))) {
-                System.out.println("해당 과목의 점수는 존재하지 않습니다.");
-                if (printEscapeCondition()) return;
+            if(subject.isPresent()) {
+                subjectId = subject.get();
+                break;
             } else {
-                subjectType = SubjectInfo.getSubjectType(subjectId);
+            if (printEscapeCondition()) return;
+            }
+        }
+
+        while (true) {
+            try {
+                System.out.println("수정할 회차를 입력하시오.");
+                round = sc.nextInt();
+
+                if (round <= 0 || round > 10) {
+                    System.out.println("\n회차는 1 ~ 10까지만 입력 가능합니다.");
+                } else {
+                    for (int i = 0; i < scoreStore.size(); i++) {
+                        Score score = scoreStore.get(i);
+                        if (score.getStudentId().equals(studentId)
+                                && score.getSubjectId().equals(subjectId)
+                                && score.getRound() == round) {
+                            scoreIdx = i;
+                            findScore = score;
+                        }
+                    }
+
+                    if (findScore == null) {
+                        System.out.println("\n해당 회차의 점수는 존재하지 않습니다.");
+                        if (printEscapeCondition()) return;
+                    } else break;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("\n회차는 숫자만 입력할 수 있습니다.");
+                sc.nextLine();
+            }
+        }
+
+        int score;
+        while (true) {
+            System.out.println("수정할 점수를 입력하시오.");
+            Optional<Integer> opScore = validateScore();
+
+            if(opScore.isPresent()) {
+                score = opScore.get();
                 break;
             }
-        }
-
-        while (true) {
-            System.out.println("수정할 회차를 입력하시오");
-            round = sc.nextInt();
-
-            if (round <= 0 || round > 10) {
-                System.out.println("회차는 1 ~ 10까지만 입력 가능합니다.");
-            } else {
-                for (int i = 0; i < scoreStore.size(); i++) {
-                    Score score = scoreStore.get(i);
-                    if (score.getStudentId().equals(studentId)
-                            && score.getSubjectId() == subjectId
-                            && score.getRound() == round) {
-                        scoreIdx = i;
-                        findScore = score;
-                    }
-                }
-
-                if (findScore == null) {
-                    System.out.println("해당 회차는 존재하지 않습니다.");
-                    if (printEscapeCondition()) return;
-                } else break;
-            }
-        }
-
-        while (true) {
-            System.out.println("수정할 점수를 입력하시오");
-            subjectScore = sc.nextInt();
-
-            if (subjectScore <= 0 || subjectScore > 100) {
-                System.out.println("점수는 1 ~ 100까지만 입력 가능합니다.");
-                if (printEscapeCondition()) return;
-            } else break;
+            if(printEscapeCondition()) return;
         }
 
         System.out.println("시험 점수를 수정합니다...");
 
-        findScore.setScore(subjectScore);
-        findScore.setGrade(scoreInToGrade(subjectScore, subjectType));
+        findScore.setScore(score);
+        findScore.setGrade(scoreInToGrade(score, SubjectInfo.getSubjectType(subjectId)));
 
         scoreStore.set(scoreIdx, findScore);
 
@@ -441,30 +448,31 @@ public class CampManagementApplication {
 
     // 수강생의 특정 과목 회차별 등급 조회
     private static void inquireRoundGradeBySubject() {
-        String studentId = getStudentId(); // 관리할 수강생 고유 번호
-        String subjectId;
+        String studentId, subjectId;
 
         while (true) {
-            if (!isExistStudentId(studentId)) {
-                System.out.println("해당 학생 ID를 찾을 수 없습니다.");
-                if (printEscapeCondition()) return;
-                else studentId = getStudentId();
-            } else {
+            System.out.println("관리할 수강생의 고유번호를 입력하시오.");
+            Optional<String> student = validateStudentId();
+
+            if (student.isPresent()) {
+                studentId = student.get();
                 break;
             }
+
+            if (printEscapeCondition()) return;
         }
 
         while (true) {
             SubjectInfo.printSubjectInfo();
-            System.out.println("등급을 확인할 과목의 번호 입력하시오");
-            subjectId = sc.next();
+            System.out.println("등급을 확인할 과목의 고유번호를 입력하시오.");
+            Optional<String> subject = validateSubjectIdIsExistScoreList(studentId);
 
-            // capturing lambda 를 위한 effectively final 변수 선언
-            String finalSubjectId = subjectId;
-            if (scoreStore.stream().noneMatch(sc -> sc.getSubjectId().equals(finalSubjectId))) {
-                System.out.println("해당 과목의 점수는 존재하지 않습니다.");
+            if(subject.isPresent()) {
+                subjectId = subject.get();
+                break;
+            } else {
                 if (printEscapeCondition()) return;
-            } else break;
+            }
         }
 
         System.out.println("회차별 등급을 조회합니다...");
@@ -481,26 +489,70 @@ public class CampManagementApplication {
         System.out.println("\n등급 조회 성공!");
     }
 
-    private static boolean isExistStudentId(String studentId) {
-        Optional<Student> student = studentStore.stream()
-                .filter(std -> std.getStudentId().equals(studentId))
-                .findFirst();
-
-        return student.isPresent();
-    }
-
     private static boolean printEscapeCondition() {
         System.out.println("계속하려면 'y'를 입력하세요. 종료하려면 다른 키를 입력하세요");
         String continueInput = sc.next();
         return !continueInput.equalsIgnoreCase("y");
     }
 
-    // score 와 type 을 통해 등급을 반환
     private static Grade scoreInToGrade(int score, SubjectType type) {
         if (SubjectType.SUBJECT_TYPE_MANDATORY == type) {
             return Grade.mandatorySubjectGrade(score);
         } else {
             return Grade.choiceSubjectGrade(score);
         }
+    }
+
+    private static Optional<String> validateStudentId() {
+        String studentId = sc.next();
+        Optional<Student> student = studentStore.stream()
+                .filter(std -> std.getStudentId().equals(studentId))
+                .findFirst();
+
+        if (student.isEmpty()) {
+            System.out.println("\n해당 학생 ID를 찾을 수 없습니다.");
+            return Optional.empty();
+        }
+
+        return Optional.of(studentId);
+    }
+
+    private static Optional<String> validateSubjectId(String studentId) {
+        String subjectId = sc.next();
+        SubjectType subjectType = SubjectInfo.getSubjectType(subjectId);
+        int index = SubjectInfo.getSubjectIndex(subjectId);
+
+        List<String> selectedSubjectList = studentStore.stream().filter(st -> st.getStudentId().equals(studentId))
+                .map(st -> subjectType == SubjectType.SUBJECT_TYPE_MANDATORY ? st.getCompulsory() : st.getElective())
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("\n해당 학생의 ID가 존재하지 않습니다."));
+
+        return selectedSubjectList.contains(String.valueOf(index)) ? Optional.of(subjectId) : Optional.empty();
+    }
+
+    private static Optional<String> validateSubjectIdIsExistScoreList(String studentId) {
+        String subjectId = sc.next();
+        if (scoreStore.stream().filter(sc -> sc.getStudentId().equals(studentId)).noneMatch(sc -> sc.getSubjectId().equals(subjectId))) {
+            System.out.println("\n해당 과목의 점수는 존재하지 않습니다.");
+            return Optional.empty();
+        }
+
+        return Optional.of(subjectId);
+    }
+
+    private static Optional<Integer> validateScore() {
+        int score;
+        try {
+            score = sc.nextInt();
+
+            if (score <= 0 || score > 100) {
+                System.out.println("\n점수는 0 ~ 100까지만 입력 가능합니다.");
+            } else return Optional.of(score);
+        } catch (InputMismatchException e) {
+            System.out.println("\n점수는 숫자만 입력할 수 있습니다.");
+            sc.nextLine();
+        }
+
+        return Optional.empty();
     }
 }

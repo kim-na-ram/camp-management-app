@@ -1,8 +1,7 @@
 package com.bootcamp.model;
 
+import com.bootcamp.exception.ManagementException;
 import com.bootcamp.utils.SubjectType;
-
-import java.util.Arrays;
 
 import static com.bootcamp.utils.SubjectType.SUBJECT_TYPE_CHOICE;
 import static com.bootcamp.utils.SubjectType.SUBJECT_TYPE_MANDATORY;
@@ -63,10 +62,6 @@ public enum SubjectInfo {
         return null;
     }
 
-    public static boolean isExistSubjectId(String subjectId) {
-        return Arrays.stream(values()).anyMatch(sbj -> sbj.subjectId.equals(subjectId));
-    }
-
     public static void printSubjectInfo() {
         System.out.println("-------------------------------");
         for(SubjectInfo sbjInfo : values()) {
@@ -81,7 +76,7 @@ public enum SubjectInfo {
                 return sbjInfo.subjectType;
             }
         }
-        throw new RuntimeException("존재하지 않는 과목입니다.");
+        throw new ManagementException("존재하지 않는 과목입니다.");
     }
 
     public static int getSubjectIndex(String subjectId) {
@@ -90,7 +85,6 @@ public enum SubjectInfo {
                 return sbjInfo.index;
             }
         }
-        throw new RuntimeException("존재하지 않는 과목입니다.");
+        throw new ManagementException("존재하지 않는 과목입니다.");
     }
 }
-
