@@ -137,10 +137,21 @@ public class CampManagementApplication {
                     System.out.println("필수 과목은 최소 3과목 이상 입력해야 합니다.");
                 } else {
                     SubjectInfo Subject = SubjectInfo.getMandatoryId(input);
-                    compulsory.add(Subject.getSubjectName());
+                    if (Subject == null) {
+                        System.out.println("해당 번호는 필수과목에 없습니다.");
+                        System.out.println("다시 입력해주세요.");
+                    } else {
+                        if (!compulsory.contains(Subject.getSubjectName())){
+                            compulsory.add(Subject.getSubjectName());
+                            System.out.println("현재 등록 된 필수 과목 : " + compulsory.toString());
+                        } else {
+                            System.out.println("중복 된 과목을 한번 더 선택 할 수 없습니다.");
+                        }
+                    }
                 }
-            } catch (RuntimeException r) {
-                System.out.println(r.getMessage());
+            } catch (InputMismatchException e) {
+                System.out.println("숫자를 입력해주세요.");
+                sc.nextLine();
             }
         }
         System.out.println("==================================");
@@ -160,10 +171,21 @@ public class CampManagementApplication {
                     System.out.println("선택 과목은 최소 2과목 이상 입력해야 합니다.");
                 } else {
                     SubjectInfo Subject = SubjectInfo.getChoice(input);
-                    elective.add(Subject.getSubjectName());
+                    if (Subject == null){
+                        System.out.println("해당 번호는 선택과목에 없습니다.");
+                        System.out.println("다시 입력해주세요.");
+                    } else {
+                        if (!elective.contains(Subject.getSubjectName())){
+                            elective.add(Subject.getSubjectName());
+                            System.out.println("현재 등록 된 선택 과목 : " + elective.toString());
+                        } else {
+                            System.out.println("중복 된 과목을 한번 더 선택 할 수 없습니다.");
+                        }
+                    }
                 }
-            } catch (RuntimeException r) {
-                System.out.println(r.getMessage());
+            } catch (InputMismatchException e) {
+                System.out.println("숫자를 입력해주세요.");
+                sc.nextLine();
             }
         }
 
