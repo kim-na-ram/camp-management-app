@@ -5,7 +5,7 @@ import com.bootcamp.utils.Grade;
 public class Score {
     private String scoreId;
     private String studentId;
-    private int subjectId;
+    private String subjectId;
     private int score;
     private int round;
     private Enum<Grade> grade;
@@ -14,7 +14,7 @@ public class Score {
         this.scoreId = seq;
     }
 
-    public Score(String scoreId, String studentId, int subjectId, int score, int round, Enum<Grade> grade) {
+    public Score(String scoreId, String studentId, String subjectId, int score, int round, Enum<Grade> grade) {
         this.scoreId = scoreId;
         this.studentId = studentId;
         this.subjectId = subjectId;
@@ -36,11 +36,11 @@ public class Score {
         this.studentId = studentId;
     }
 
-    public int getSubjectId() {
+    public String getSubjectId() {
         return subjectId;
     }
 
-    public void setSubjectId(int subjectId) {
+    public void setSubjectId(String subjectId) {
         this.subjectId = subjectId;
     }
 
