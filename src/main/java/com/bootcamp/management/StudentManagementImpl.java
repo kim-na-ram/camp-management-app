@@ -1,39 +1,24 @@
-package com.bootcamp.model;
+package com.bootcamp.management;
 
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import com.bootcamp.model.Student;
+import com.bootcamp.model.SubjectInfo;
+import com.bootcamp.model.SubjectType;
+
+import java.util.*;
+
+import static com.bootcamp.utils.Utils.INDEX_TYPE_STUDENT;
+import static com.bootcamp.utils.Utils.sequence;
 
 public class StudentManagementImpl implements StudentManagement {
-
-    /* 임시 (삭제 예정) */
-    private static int studentIndex;
-    private static final String INDEX_TYPE_STUDENT = "ST";
-    private static int scoreIndex;
-    private static final String INDEX_TYPE_SCORE = "SC";
-    // index 자동 증가
-    private static String sequence(String type) {
-        switch (type) {
-            case INDEX_TYPE_STUDENT -> {
-                studentIndex++;
-                return INDEX_TYPE_STUDENT + studentIndex;
-            }
-            default -> {
-                scoreIndex++;
-                return INDEX_TYPE_SCORE + scoreIndex;
-            }
-        }
-    }
 
     private static List<Student> studentStore;
     private static List<String> compulsory;
     private static List<String> elective;
-    private static Scanner sc;
+
+    private final static Scanner sc = new Scanner(System.in);
 
     public StudentManagementImpl() {
         this.studentStore = new ArrayList<>();
-        this.sc = new Scanner(System.in);
     }
 
     //getter
@@ -144,5 +129,74 @@ public class StudentManagementImpl implements StudentManagement {
                 sc.nextLine();
             }
         }
+    }
+
+    @Override
+    public void inquireStudent() {                 //예외처리 생각해보기
+        System.out.println("1. 수강생 전체 조회");
+        System.out.println("2. 수강생 ID 조회");
+        System.out.println("3. 수강생 이름 조회");
+
+        // 기능 구현
+        int select = sc.nextInt();
+
+        if (select == 1) {
+            System.out.println("\n수강생 목록을 조회합니다...");
+            if (studentStore.isEmpty()) {
+                System.out.println("등록된 수강생이 존재하지 않습니다");
+            } else {
+                // 수강생 목록을 sort 를 사용하여 정렬하고
+                // comparator 를 사용해 기준으로 오름차순 정렬
+                studentStore.sort(Comparator.comparing(Student::getStudentName));
+
+                // 정렬된 수강생 목록 출력
+                for (Student student : studentStore) {
+                    System.out.println("이름: " + student.getStudentName());
+                    System.out.println("ID: " + student.getStudentId());
+                    System.out.println(); // 수강생 정보 구분을 위해 빈 줄 추가
+                }
+
+                System.out.println("수강생 목록 조회 성공!");
+            }
+        } else if (select == 2) {
+            System.out.println("조회할 수강생의 ID를 입력해 주세요: ");
+            String studentId = sc.next();
+
+            for (Student student : studentStore) {
+                if (student.getStudentId().equalsIgnoreCase(studentId)) {
+                    System.out.println();
+                    System.out.println("이름: " + student.getStudentName());
+                    System.out.println("ID: " + student.getStudentId());
+
+                } else if (studentId.isEmpty()) {
+                    System.out.println("등록된 수강생이 존재하지 않습니다");
+                }
+            }
+        } else if (select == 3) {
+            System.out.println("조회할 수강생의 이름을 입력해 주세요: ");
+            String studentName = sc.next();
+            for (Student student : studentStore) {
+                if (student.getStudentName().equalsIgnoreCase(studentName)) {
+                    System.out.println();
+                    System.out.println("이름: " + student.getStudentName());
+                    System.out.println("ID: " + student.getStudentId());
+                } else if (studentName.isEmpty()) {
+                    System.out.println("등록된 수강생이 존재하지 않습니다");
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean isExistStudent(String studentId) {
+        return studentStore.stream().anyMatch(student -> student.getStudentId().equals(studentId));
+    }
+
+    @Override
+    public List<String> getSelectedSubjectList(String studentId, SubjectType subjectType) {
+        return studentStore.stream().filter(st -> st.getStudentId().equals(studentId))
+                .map(st -> subjectType == SubjectType.SUBJECT_TYPE_MANDATORY ? st.getCompulsory() : st.getElective())
+                .findFirst()
+                .get();
     }
 }
