@@ -1,11 +1,9 @@
 package com.bootcamp;
 
-import com.bootcamp.exception.ManagementException;
 import com.bootcamp.management.StudentManagement;
 import com.bootcamp.management.StudentManagementImpl;
-import com.bootcamp.model.*;
-import com.bootcamp.model.Grade;
-import com.bootcamp.model.SubjectType;
+import com.bootcamp.management.ScoreRecordManagement;
+import com.bootcamp.management.ScoreRecordManagementImpl;
 
 import java.util.*;
 
@@ -19,14 +17,7 @@ import java.util.*;
  */
 public class CampManagementApplication {
     private static StudentManagement studentManagement;
-
-    // 데이터 저장소
-    private static List<Student> studentStore;
-    private static ArrayList<Score> scoreStore;
-
-    // index 관리 필드
-    private static int scoreIndex;
-    private static final String INDEX_TYPE_SCORE = "SC";
+    private static ScoreRecordManagement scoreRecordManagement;
 
     // 스캐너
     private static Scanner sc = new Scanner(System.in);
@@ -42,23 +33,9 @@ public class CampManagementApplication {
         }
     }
 
-    // 초기 데이터 생성
     private static void setInitData() {
         studentManagement = new StudentManagementImpl();
-
-        // TODO 삭제예정
-        studentStore = new ArrayList<>();
-        scoreStore = new ArrayList<>();
-    }
-
-    // index 자동 증가
-    private static String sequence(String type) {
-        switch (type) {
-            default -> {
-                scoreIndex++;
-                return INDEX_TYPE_SCORE + scoreIndex;
-            }
-        }
+        scoreRecordManagement = new ScoreRecordManagementImpl(studentManagement);
     }
 
     private static void displayMainView() throws InterruptedException {
@@ -121,9 +98,9 @@ public class CampManagementApplication {
             int input = sc.nextInt();
 
             switch (input) {
-                case 1 -> createScore(); // 수강생의 과목별 시험 회차 및 점수 등록
-                case 2 -> updateRoundScoreBySubject(); // 수강생의 과목별 회차 점수 수정
-                case 3 -> inquireRoundGradeBySubject(); // 수강생의 특정 과목 회차별 등급 조회
+                case 1 -> scoreRecordManagement.createScore(); // 수강생의 과목별 시험 회차 및 점수 등록
+                case 2 -> scoreRecordManagement.updateRoundScoreBySubject(); // 수강생의 과목별 회차 점수 수정
+                case 3 -> scoreRecordManagement.inquireRoundGradeBySubject(); // 수강생의 특정 과목 회차별 등급 조회
                 case 4 -> flag = false; // 메인 화면 이동
                 default -> {
                     System.out.println("잘못된 입력입니다.\n메인 화면 이동...");
@@ -131,284 +108,5 @@ public class CampManagementApplication {
                 }
             }
         }
-    }
-
-    // 수강생의 과목별 시험 회차 및 점수 등록
-    private static void createScore() {
-        SubjectType subjectType;
-        String studentId;
-        int round;
-
-        Score newscore = new Score(sequence(INDEX_TYPE_SCORE));
-        while (true) {
-            System.out.println("관리할 수강생의 번호를 입력하시오...");
-            studentId = sc.next();
-            boolean found = false;
-            for (int i = 0; i < studentStore.size(); i++) {
-                if (studentStore.get(i).getStudentId().equals(studentId)) {
-                    newscore.setStudentId(studentId);
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                System.out.println("해당 학생 ID를 찾을 수 없습니다.");
-                if (printEscapeCondition()) return;
-            } else break;
-        }
-
-        while (true) {
-            try {
-                SubjectInfo.printSubjectInfo();
-                System.out.println("관리할 과목의 고유번호를 입력하시오...");
-                Optional<String> student = validateSubjectId(studentId);
-
-                if (student.isPresent()) {
-                    newscore.setSubjectId(student.get());
-                    subjectType = SubjectInfo.getSubjectType(student.get());
-                    break;
-                }
-
-                System.out.println("해당 과목은 선택되지 않아 등록할 수 없습니다.");
-                if (printEscapeCondition()) return;
-            } catch (ManagementException e) {
-                System.out.println(e.getMessage());
-            }
-        }
-
-        while (true) {
-            System.out.println("등록할 회차를 입력하시오...");
-            round = sc.nextInt();
-            if (round <= 0 || round > 10) {
-                System.out.println("회차범위: 1~10까지 입력하시오...");
-                continue;
-            }
-
-            boolean roundExists = false;
-            for (Score existingScore : scoreStore) {
-                if (existingScore.getStudentId().equals(newscore.getStudentId()) &&
-                        existingScore.getSubjectId().equals(newscore.getSubjectId()) &&
-                        existingScore.getRound() == round) {
-                    roundExists = true;
-                    break;
-                }
-            }
-            if (roundExists) {
-                System.out.println("이미 등록되어 있는 회차는 등록할 수 없습니다.");
-            } else {
-                newscore.setRound(round);
-                break;
-            }
-        }
-
-        while (true) {
-            System.out.println("등록할 점수를 입력하시오");
-            Optional<Integer> score = validateScore();
-
-            if(score.isPresent()) {
-                newscore.setScore(score.get());
-                newscore.setGrade(scoreInToGrade(score.get(), subjectType));
-                break;
-            }
-
-            if(printEscapeCondition()) return;
-        }
-
-        System.out.println("시험 점수를 등록합니다...");
-        scoreStore.add(newscore);
-        System.out.println("\n점수 등록 성공!");
-    }
-
-    // 수강생의 과목별 회차 점수 수정
-    private static void updateRoundScoreBySubject() {
-        String studentId, subjectId;
-        int round, scoreIdx = 0;
-
-        Score findScore = null;
-
-        while (true) {
-            System.out.println("관리할 수강생의 고유번호를 입력하시오.");
-            Optional<String> student = validateStudentId();
-
-            if (student.isPresent()) {
-                studentId = student.get();
-                break;
-            }
-
-            if (printEscapeCondition()) return;
-        }
-
-        while (true) {
-            SubjectInfo.printSubjectInfo();
-            System.out.println("수정할 과목의 고유번호를 입력하시오.");
-            Optional<String> subject = validateSubjectIdIsExistScoreList(studentId);
-
-            if(subject.isPresent()) {
-                subjectId = subject.get();
-                break;
-            } else {
-            if (printEscapeCondition()) return;
-            }
-        }
-
-        while (true) {
-            try {
-                System.out.println("수정할 회차를 입력하시오.");
-                round = sc.nextInt();
-
-                if (round <= 0 || round > 10) {
-                    System.out.println("\n회차는 1 ~ 10까지만 입력 가능합니다.");
-                } else {
-                    for (int i = 0; i < scoreStore.size(); i++) {
-                        Score score = scoreStore.get(i);
-                        if (score.getStudentId().equals(studentId)
-                                && score.getSubjectId().equals(subjectId)
-                                && score.getRound() == round) {
-                            scoreIdx = i;
-                            findScore = score;
-                        }
-                    }
-
-                    if (findScore == null) {
-                        System.out.println("\n해당 회차의 점수는 존재하지 않습니다.");
-                        if (printEscapeCondition()) return;
-                    } else break;
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("\n회차는 숫자만 입력할 수 있습니다.");
-                sc.nextLine();
-            }
-        }
-
-        int score;
-        while (true) {
-            System.out.println("수정할 점수를 입력하시오.");
-            Optional<Integer> opScore = validateScore();
-
-            if(opScore.isPresent()) {
-                score = opScore.get();
-                break;
-            }
-            if(printEscapeCondition()) return;
-        }
-
-        System.out.println("시험 점수를 수정합니다...");
-
-        findScore.setScore(score);
-        findScore.setGrade(scoreInToGrade(score, SubjectInfo.getSubjectType(subjectId)));
-
-        scoreStore.set(scoreIdx, findScore);
-
-        System.out.println("\n점수 수정 성공!");
-    }
-
-    // 수강생의 특정 과목 회차별 등급 조회
-    private static void inquireRoundGradeBySubject() {
-        String studentId, subjectId;
-
-        while (true) {
-            System.out.println("관리할 수강생의 고유번호를 입력하시오.");
-            Optional<String> student = validateStudentId();
-
-            if (student.isPresent()) {
-                studentId = student.get();
-                break;
-            }
-
-            if (printEscapeCondition()) return;
-        }
-
-        while (true) {
-            SubjectInfo.printSubjectInfo();
-            System.out.println("등급을 확인할 과목의 고유번호를 입력하시오.");
-            Optional<String> subject = validateSubjectIdIsExistScoreList(studentId);
-
-            if(subject.isPresent()) {
-                subjectId = subject.get();
-                break;
-            } else {
-                if (printEscapeCondition()) return;
-            }
-        }
-
-        System.out.println("회차별 등급을 조회합니다...");
-
-        // capturing lambda 로 인한 effectively final 변수 선언
-        String finalStudentId = studentId;
-        String finalSubjectId = subjectId;
-
-        List<Score> roundList = scoreStore.stream().filter(sc -> sc.getStudentId().equals(finalStudentId)
-                && sc.getSubjectId().equals(finalSubjectId)).toList();
-
-        roundList.forEach(score -> System.out.println(score.getRound() + "회차 등급 : " + score.getGrade()));
-
-        System.out.println("\n등급 조회 성공!");
-    }
-
-    private static boolean printEscapeCondition() {
-        System.out.println("계속하려면 'y'를 입력하세요. 종료하려면 다른 키를 입력하세요");
-        String continueInput = sc.next();
-        return !continueInput.equalsIgnoreCase("y");
-    }
-
-    private static Grade scoreInToGrade(int score, SubjectType type) {
-        if (SubjectType.SUBJECT_TYPE_MANDATORY == type) {
-            return Grade.mandatorySubjectGrade(score);
-        } else {
-            return Grade.choiceSubjectGrade(score);
-        }
-    }
-
-    private static Optional<String> validateStudentId() {
-        String studentId = sc.next();
-        Optional<Student> student = studentStore.stream()
-                .filter(std -> std.getStudentId().equals(studentId))
-                .findFirst();
-
-        if (student.isEmpty()) {
-            System.out.println("\n해당 학생 ID를 찾을 수 없습니다.");
-            return Optional.empty();
-        }
-
-        return Optional.of(studentId);
-    }
-
-    private static Optional<String> validateSubjectId(String studentId) {
-        String subjectId = sc.next();
-        SubjectType subjectType = SubjectInfo.getSubjectType(subjectId);
-        int index = SubjectInfo.getSubjectIndex(subjectId);
-
-        List<String> selectedSubjectList = studentStore.stream().filter(st -> st.getStudentId().equals(studentId))
-                .map(st -> subjectType == SubjectType.SUBJECT_TYPE_MANDATORY ? st.getCompulsory() : st.getElective())
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("\n해당 학생의 ID가 존재하지 않습니다."));
-
-        return selectedSubjectList.contains(String.valueOf(index)) ? Optional.of(subjectId) : Optional.empty();
-    }
-
-    private static Optional<String> validateSubjectIdIsExistScoreList(String studentId) {
-        String subjectId = sc.next();
-        if (scoreStore.stream().filter(sc -> sc.getStudentId().equals(studentId)).noneMatch(sc -> sc.getSubjectId().equals(subjectId))) {
-            System.out.println("\n해당 과목의 점수는 존재하지 않습니다.");
-            return Optional.empty();
-        }
-
-        return Optional.of(subjectId);
-    }
-
-    private static Optional<Integer> validateScore() {
-        int score;
-        try {
-            score = sc.nextInt();
-
-            if (score <= 0 || score > 100) {
-                System.out.println("\n점수는 0 ~ 100까지만 입력 가능합니다.");
-            } else return Optional.of(score);
-        } catch (InputMismatchException e) {
-            System.out.println("\n점수는 숫자만 입력할 수 있습니다.");
-            sc.nextLine();
-        }
-
-        return Optional.empty();
     }
 }
