@@ -2,6 +2,8 @@ package com.bootcamp;
 
 import com.bootcamp.management.StudentManagement;
 import com.bootcamp.management.StudentManagementImpl;
+import com.bootcamp.management.StudentStatusManagement;
+import com.bootcamp.management.StudentStatusManagementImpl;
 import com.bootcamp.model.*;
 import com.bootcamp.model.Grade;
 import com.bootcamp.model.SubjectType;
@@ -90,15 +92,41 @@ public class CampManagementApplication {
             System.out.println("==================================");
             System.out.println("수강생 관리 실행 중...");
             System.out.println("1. 수강생 등록");
-            System.out.println("2. 수강생 목록 조회");
-            System.out.println("3. 메인 화면 이동");
+            System.out.println("2. 수강생 상태 관리");
+            System.out.println("3. 수강생 목록 조회");
+            System.out.println("4. 메인 화면 이동");
             System.out.print("관리 항목을 선택하세요...");
             int input = sc.nextInt();
 
             switch (input) {
                 case 1 -> studentManagement.createStudent(); // 수강생 등록
-                case 2 -> studentManagement.inquireStudent(); // 수강생 목록 조회
-                case 3 -> flag = false; // 메인 화면 이동
+                case 2 -> displayStatusView(); // 수강생 목록 조회
+                case 3 -> studentManagement.inquireStudent(); // 수강생 목록 조회
+                case 4 -> flag = false; // 메인 화면 이동
+                default -> {
+                    System.out.println("잘못된 입력입니다.\n메인 화면 이동...");
+                    flag = false;
+                }
+            }
+        }
+    }
+
+    private static void displayStatusView() {
+        StudentStatusManagement smi = new StudentStatusManagementImpl(studentManagement);
+        boolean flag = true;
+        while (flag) {
+            System.out.println("==================================");
+            System.out.println("수강생 관리 실행 중...");
+            System.out.println("1. 수강생 상태 등록");
+            System.out.println("2. 수강생 상태 수정");
+            System.out.println("3. 수강생 관리 화면 이동");
+            System.out.print("관리 항목을 선택하세요...");
+            int input = sc.nextInt();
+
+            switch (input) {
+                case 1 -> smi.createStatus(); // 상태 등록
+                case 2 -> smi.updateStatus(); // 상태 수정
+                case 3 -> flag = false; // 수강생 관리 화면 이동
                 default -> {
                     System.out.println("잘못된 입력입니다.\n메인 화면 이동...");
                     flag = false;
