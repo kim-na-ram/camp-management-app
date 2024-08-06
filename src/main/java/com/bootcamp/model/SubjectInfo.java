@@ -1,10 +1,8 @@
 package com.bootcamp.model;
 
 import com.bootcamp.exception.ManagementException;
-import com.bootcamp.utils.SubjectType;
-
-import static com.bootcamp.utils.SubjectType.SUBJECT_TYPE_CHOICE;
-import static com.bootcamp.utils.SubjectType.SUBJECT_TYPE_MANDATORY;
+import static com.bootcamp.model.SubjectType.SUBJECT_TYPE_CHOICE;
+import static com.bootcamp.model.SubjectType.SUBJECT_TYPE_MANDATORY;
 
 public enum SubjectInfo {
     /* 필수 과목 */

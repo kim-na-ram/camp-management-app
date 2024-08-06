@@ -1,4 +1,4 @@
-package com.bootcamp.utils;
+package com.bootcamp.model;
 
 public enum Grade {
     A,

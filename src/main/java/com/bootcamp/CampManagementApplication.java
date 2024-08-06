@@ -1,9 +1,11 @@
 package com.bootcamp;
 
 import com.bootcamp.exception.ManagementException;
+import com.bootcamp.management.StudentManagement;
+import com.bootcamp.management.StudentManagementImpl;
 import com.bootcamp.model.*;
-import com.bootcamp.utils.Grade;
-import com.bootcamp.utils.SubjectType;
+import com.bootcamp.model.Grade;
+import com.bootcamp.model.SubjectType;
 
 import java.util.*;
 
@@ -16,13 +18,13 @@ import java.util.*;
  * 구현에 도움을 주기위한 Base 프로젝트입니다. 자유롭게 이용해주세요!
  */
 public class CampManagementApplication {
+    private static StudentManagement studentManagement;
+
     // 데이터 저장소
     private static List<Student> studentStore;
     private static ArrayList<Score> scoreStore;
 
     // index 관리 필드
-    private static int studentIndex;
-    private static final String INDEX_TYPE_STUDENT = "ST";
     private static int scoreIndex;
     private static final String INDEX_TYPE_SCORE = "SC";
 
@@ -42,6 +44,9 @@ public class CampManagementApplication {
 
     // 초기 데이터 생성
     private static void setInitData() {
+        studentManagement = new StudentManagementImpl();
+
+        // TODO 삭제예정
         studentStore = new ArrayList<>();
         scoreStore = new ArrayList<>();
     }
@@ -49,10 +54,6 @@ public class CampManagementApplication {
     // index 자동 증가
     private static String sequence(String type) {
         switch (type) {
-            case INDEX_TYPE_STUDENT -> {
-                studentIndex++;
-                return INDEX_TYPE_STUDENT + studentIndex;
-            }
             default -> {
                 scoreIndex++;
                 return INDEX_TYPE_SCORE + scoreIndex;
@@ -85,7 +86,6 @@ public class CampManagementApplication {
     }
 
     private static void displayStudentView() {
-        StudentManagementImpl smi = new StudentManagementImpl();
         boolean flag = true;
         while (flag) {
             System.out.println("==================================");
@@ -97,8 +97,8 @@ public class CampManagementApplication {
             int input = sc.nextInt();
 
             switch (input) {
-                case 1 -> smi.createStudent(); // 수강생 등록
-                case 2 -> inquireStudent(); // 수강생 목록 조회
+                case 1 -> studentManagement.createStudent(); // 수강생 등록
+                case 2 -> studentManagement.inquireStudent(); // 수강생 목록 조회
                 case 3 -> flag = false; // 메인 화면 이동
                 default -> {
                     System.out.println("잘못된 입력입니다.\n메인 화면 이동...");
@@ -107,63 +107,6 @@ public class CampManagementApplication {
             }
         }
     }
-
-    private static void inquireStudent() {                 //예외처리 생각해보기
-        System.out.println("1. 수강생 전체 조회");
-        System.out.println("2. 수강생 ID 조회");
-        System.out.println("3. 수강생 이름 조회");
-
-        // 기능 구현
-        int select = sc.nextInt();
-
-        if (select == 1) {
-            System.out.println("\n수강생 목록을 조회합니다...");
-            if (studentStore.isEmpty()) {
-                System.out.println("등록된 수강생이 존재하지 않습니다");
-            } else {
-                // 수강생 목록을 sort 를 사용하여 정렬하고
-                // comparator 를 사용해 기준으로 오름차순 정렬
-                studentStore.sort(Comparator.comparing(Student::getStudentName));
-
-                // 정렬된 수강생 목록 출력
-                for (Student student : studentStore) {
-                    System.out.println("이름: " + student.getStudentName());
-                    System.out.println("ID: " + student.getStudentId());
-                    System.out.println(); // 수강생 정보 구분을 위해 빈 줄 추가
-                }
-
-                System.out.println("수강생 목록 조회 성공!");
-            }
-        } else if (select == 2) {
-            System.out.println("조회할 수강생의 ID를 입력해 주세요: ");
-            String studentId = sc.next();
-
-            for (Student student : studentStore) {
-                if (student.getStudentId().equalsIgnoreCase(studentId)) {
-                    System.out.println();
-                    System.out.println("이름: " + student.getStudentName());
-                    System.out.println("ID: " + student.getStudentId());
-
-                } else if (studentId.isEmpty()) {
-                    System.out.println("등록된 수강생이 존재하지 않습니다");
-                }
-            }
-        } else if (select == 3) {
-            System.out.println("조회할 수강생의 이름을 입력해 주세요: ");
-            String studentName = sc.next();
-            boolean flag = false;
-            for (Student student : studentStore) {
-                if (student.getStudentName().equalsIgnoreCase(studentName)) {
-                    System.out.println();
-                    System.out.println("이름: " + student.getStudentName());
-                    System.out.println("ID: " + student.getStudentId());
-                } else if (studentName.isEmpty()) {
-                    System.out.println("등록된 수강생이 존재하지 않습니다");
-                }
-            }
-            }
-    }
-
 
     private static void displayScoreView() {
         boolean flag = true;

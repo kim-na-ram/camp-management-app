@@ -1,4 +1,4 @@
-package com.bootcamp.utils;
+package com.bootcamp.model;
 
 public enum SubjectType {
     SUBJECT_TYPE_MANDATORY,

@@ -1,7 +1,5 @@
 package com.bootcamp.model;
 
-import com.bootcamp.utils.Grade;
-
 public class Score {
     private String scoreId;
     private String studentId;
