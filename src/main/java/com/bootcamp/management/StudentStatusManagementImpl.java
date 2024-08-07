@@ -3,28 +3,29 @@ package com.bootcamp.management;
 import com.bootcamp.model.Student;
 import com.bootcamp.model.StudentStatus;
 import com.bootcamp.repository.StudentRepository;
+import com.bootcamp.repository.StudentRepositoryImpl;
 
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class StudentStatusManagementImpl implements StudentStatusManagement {
-    private String studentId;
-    private static List<Student> studentStore = StudentRepository.getStudentStore();
-    private static Scanner sc;
-    StudentManagement smi;
+    private final StudentRepository studentRepository;
 
-    public StudentStatusManagementImpl(StudentManagement studentManagement) {
-        smi = studentManagement;
-        sc = new Scanner(System.in);
+    private final Scanner sc = new Scanner(System.in);
+
+    private String studentId;
+
+    public StudentStatusManagementImpl() {
+        studentRepository = new StudentRepositoryImpl();
     }
 
-    public Student studentId(){
+    public Student getStudent() {
         sc.nextLine();
         System.out.println("수강생의 ID를 입력하세요.");
         studentId = sc.nextLine();
-        Student student = StudentManagementImpl.getStudentId(studentId);
-        return student;
+        return studentRepository.getStudentById(studentId).orElse(null);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class StudentStatusManagementImpl implements StudentStatusManagement {
         System.out.println("수강생 상태를 등록합니다.");
         boolean found = true;
         while (true) {
-            Student id = studentId();
+            Student id = getStudent();
             if(id == null){
                 System.out.println("ID를 찾을 수 없습니다.");
                 found = false;
@@ -67,7 +68,7 @@ public class StudentStatusManagementImpl implements StudentStatusManagement {
         System.out.println("수강생 상태를 수정합니다.");
         boolean found = true;
         while (true) {
-            Student id = studentId();
+            Student id = getStudent();
             if(id == null){
                 System.out.println("ID를 찾을 수 없습니다.");
                 found = false;

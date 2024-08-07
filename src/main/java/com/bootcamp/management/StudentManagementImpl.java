@@ -2,8 +2,8 @@ package com.bootcamp.management;
 
 import com.bootcamp.model.Student;
 import com.bootcamp.model.SubjectInfo;
-import com.bootcamp.model.SubjectType;
 import com.bootcamp.repository.StudentRepository;
+import com.bootcamp.repository.StudentRepositoryImpl;
 
 import java.util.*;
 
@@ -11,39 +11,25 @@ import static com.bootcamp.utils.Utils.INDEX_TYPE_STUDENT;
 import static com.bootcamp.utils.Utils.sequence;
 
 public class StudentManagementImpl implements StudentManagement {
-
-    private static List<Student> studentStore = StudentRepository.getStudentStore();
-    private static List<String> compulsory;
-    private static List<String> elective;
+    private final StudentRepository studentRepository;
 
     private final static Scanner sc = new Scanner(System.in);
 
     public StudentManagementImpl() {
-        this.studentStore = new ArrayList<>();
-    }
-
-    //getter
-    public List<String> getCompulsory() {
-        return compulsory;
-    }
-    public List<String> getElective() {
-        return elective;
-    }
-    public static List<Student> getStudentStore() {
-        return studentStore;
+        this.studentRepository = new StudentRepositoryImpl();
     }
 
     @Override
     public void createStudent() {
-        compulsory = new ArrayList<>();
-        elective = new ArrayList<>();
+        List<String> compulsory = new ArrayList<>();
+        List<String> elective = new ArrayList<>();
         String studentName = createStudentName();
-        createStudentMandatory();
-        createStudentChoice();
+        createStudentMandatory(compulsory);
+        createStudentChoice(elective);
 
-        Student student = new Student(sequence(INDEX_TYPE_STUDENT), studentName, getCompulsory(), getElective()); // 수강생 인스턴스 생성 예시 코드
+        Student student = new Student(sequence(INDEX_TYPE_STUDENT), studentName, compulsory, elective); // 수강생 인스턴스 생성 예시 코드
 
-        studentStore.add(student);
+        studentRepository.addStudent(student);
         System.out.println("수강생 등록 성공!\n");
         System.out.println("현재 등록 하신 수강생 정보: ");
         System.out.println("ID: " + student.getStudentId());
@@ -53,16 +39,14 @@ public class StudentManagementImpl implements StudentManagement {
     }
 
     //수강생 이름 등록
-    public static String createStudentName() {
-        sc.nextLine();
+    public String createStudentName() {
         System.out.println("\n수강생을 등록합니다...");
         System.out.print("수강생 이름 입력: ");
-        String studentName = sc.nextLine();
-        return studentName;
+        return sc.nextLine();
     }
 
     // 수강생 필수 과목 등록
-    public static void createStudentMandatory() {
+    public void createStudentMandatory(List<String> compulsory) {
         // 기능 구현 (필수 과목, 선택 과목)
         System.out.println("==================================");
         System.out.println("필수 과목에 해당하는 번호를 입력하세요. (1 ~ 5)");
@@ -100,7 +84,7 @@ public class StudentManagementImpl implements StudentManagement {
         }
     }
     //수강생 선택 과목 등록
-    public static void createStudentChoice(){
+    public void createStudentChoice(List<String> elective) {
         System.out.println("==================================");
         System.out.println("선택 과목에 해당하는 번호를 입력하세요. (1 ~ 4)");
         System.out.println("1. 디자인 패턴   ||  2. Spring Security");
@@ -142,11 +126,10 @@ public class StudentManagementImpl implements StudentManagement {
         System.out.println("1. 수강생 전체 조회");
         System.out.println("2. 수강생 ID 조회");
         System.out.println("3. 수강생 이름 조회");
-
-
         int select = sc.nextInt();
         boolean inquiry = false;
 
+        List<Student> studentStore = studentRepository.getStudentStore();
         if (select == 1) {
             System.out.println("\n수강생 목록을 조회합니다...");
             if (studentStore.isEmpty()) {
@@ -166,21 +149,22 @@ public class StudentManagementImpl implements StudentManagement {
         } else if (select == 2) {
             System.out.println("조회할 수강생의 ID를 입력해 주세요: ");
             String studentId = sc.next();
-            for (Student student : studentStore) {
-                if (student.getStudentId().equalsIgnoreCase(studentId)) {
-                    inquiry = true;
-                    System.out.println();
-                    System.out.println("수강생 조회를 완료했습니다.");
-                    System.out.println("이름: " + student.getStudentName());
-                    System.out.println("ID: " + student.getStudentId());
-                    System.out.println("필수 과목: " + student.getCompulsory());
-                    System.out.println("선택 과목: " + student.getElective());
-                    System.out.println("상태 : " + student.getStatus() );
-                }
-            }if (!inquiry) {
+
+            inquiry = studentRepository.isExistStudentById(studentId);
+            if(inquiry) {
+                Student student = studentRepository.getStudentById(studentId).get();
+                System.out.println();
+                System.out.println("수강생 조회를 완료했습니다.");
+                System.out.println("이름: " + student.getStudentName());
+                System.out.println("ID: " + student.getStudentId());
+                System.out.println("필수 과목: " + student.getCompulsory());
+                System.out.println("선택 과목: " + student.getElective());
+                System.out.println("상태 : " + student.getStatus() );
+            } else {
                 System.out.println("입력한 ID가 존재하지 않습니다");
             }
         } else if (select == 3) {
+            // TODO 이 부분은 중복 이름이 있을 수도 있으니 List 로 받는 것이 맞을듯함
             System.out.println("조회할 수강생의 이름을 입력해 주세요: ");
             String studentName = sc.next();
             for (Student student : studentStore) {
@@ -200,11 +184,14 @@ public class StudentManagementImpl implements StudentManagement {
         }
     }
 
+    // TODO repository 메서드를 사용하도록 수정
     // 수강생 이름 수정
     public void modifyStudentName(){
         System.out.println("수정하실 수강생의 이름을 입력해 주세요: ");
         String studentName = sc.next();
         boolean named = false;
+
+        List<Student> studentStore = studentRepository.getStudentStore();
         for (Student student : studentStore) {
             if (student.getStudentName().equalsIgnoreCase(studentName)) {
                 named = true;
@@ -220,27 +207,4 @@ public class StudentManagementImpl implements StudentManagement {
             System.out.println("등록된 수강생이 존재하지 않습니다");
         }
     }
-
-    @Override
-    public boolean isExistStudent(String studentId) {
-        return studentStore.stream().anyMatch(student -> student.getStudentId().equals(studentId));
-    }
-
-    @Override
-    public List<String> getSelectedSubjectList(String studentId, SubjectType subjectType) {
-        return studentStore.stream().filter(st -> st.getStudentId().equals(studentId))
-                .map(st -> subjectType == SubjectType.SUBJECT_TYPE_MANDATORY ? st.getCompulsory() : st.getElective())
-                .findFirst()
-                .get();
-    }
-
-    public static Student getStudentId(String studentId) {
-        for (Student student : studentStore){
-            if (student.getStudentId().equals(studentId)) {
-                return student;
-            }
-        }
-        return null;
-    }
-
 }

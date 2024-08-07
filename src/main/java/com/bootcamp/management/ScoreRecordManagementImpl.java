@@ -5,6 +5,7 @@ import com.bootcamp.model.*;
 import com.bootcamp.repository.ScoreRepository;
 import com.bootcamp.repository.ScoreRepositoryImpl;
 import com.bootcamp.repository.StudentRepository;
+import com.bootcamp.repository.StudentRepositoryImpl;
 import com.bootcamp.utils.Utils;
 import com.bootcamp.validation.ScoreValidator;
 
@@ -18,7 +19,7 @@ public class ScoreRecordManagementImpl implements ScoreRecordManagement {
     private final Scanner sc = new Scanner(System.in);
 
     public ScoreRecordManagementImpl() {
-        this.studentRepository = new StudentRepository();
+        this.studentRepository = new StudentRepositoryImpl();
         this.scoreRepository = new ScoreRepositoryImpl();
     }
 
