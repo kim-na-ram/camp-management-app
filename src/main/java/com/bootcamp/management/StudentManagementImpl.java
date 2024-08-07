@@ -2,8 +2,12 @@ package com.bootcamp.management;
 
 import com.bootcamp.model.Student;
 import com.bootcamp.model.SubjectInfo;
+import com.bootcamp.model.SubjectType;
+import com.bootcamp.repository.ScoreRepository;
+import com.bootcamp.repository.ScoreRepositoryImpl;
 import com.bootcamp.repository.StudentRepository;
 import com.bootcamp.repository.StudentRepositoryImpl;
+import com.bootcamp.utils.Utils;
 
 import java.util.*;
 
@@ -11,12 +15,14 @@ import static com.bootcamp.utils.Utils.INDEX_TYPE_STUDENT;
 import static com.bootcamp.utils.Utils.sequence;
 
 public class StudentManagementImpl implements StudentManagement {
-    private final StudentRepository studentRepository;
+    private StudentRepository studentRepository;
+    private ScoreRepository scoreRepository;
 
     private final static Scanner sc = new Scanner(System.in);
 
     public StudentManagementImpl() {
-        this.studentRepository = new StudentRepositoryImpl();
+        studentRepository = new StudentRepositoryImpl();
+        scoreRepository = new ScoreRepositoryImpl();
     }
 
     @Override
@@ -205,6 +211,39 @@ public class StudentManagementImpl implements StudentManagement {
             }
         }if (!named){
             System.out.println("등록된 수강생이 존재하지 않습니다");
+        }
+    }
+
+    // 수강생 삭제
+    @Override
+    public void deleteStudent() {
+        while (true) {
+            System.out.println("삭제할 수강생의 ID를 입력하시오 (취소하려면 'exit' 입력)...");
+            String studentId = sc.next();
+
+            if ("exit".equalsIgnoreCase(studentId)) {
+                System.out.println("삭제를 취소합니다.");
+                return;
+            }
+
+            // 학생 ID로 학생 찾기
+            if (studentRepository.isExistStudentById(studentId)) {
+                if (studentRepository.removeStudentById(studentId)) {
+                    // 점수 저장소에서 해당 수강생의 점수도 삭제
+                    if (scoreRepository.removeScoresByStudentId(studentId)) {
+                        System.out.println("수강생과 관련된 모든 점수를 삭제했습니다.");
+                    } else {
+                        System.out.println("해당 수강생의 점수를 찾을 수 없습니다.");
+                    }
+                    System.out.println("수강생 삭제 성공!");
+                    break;
+                } else {
+                    System.out.println("수강생 삭제에 실패했습니다.");
+                }
+            } else {
+                System.out.println("해당 수강생 ID를 찾을 수 없습니다.");
+                if (Utils.printEscapeCondition(sc)) return;
+            }
         }
     }
 }

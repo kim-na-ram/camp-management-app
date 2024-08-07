@@ -8,5 +8,6 @@ public interface StudentManagement {
     void createStudent();
     void inquireStudent();
     void modifyStudentName();
+    void deleteStudent();
 }
 
