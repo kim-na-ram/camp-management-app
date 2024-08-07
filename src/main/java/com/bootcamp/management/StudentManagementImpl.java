@@ -229,8 +229,6 @@ public class StudentManagementImpl implements StudentManagement {
                     }
                     System.out.println("수강생 삭제 성공!");
                     break;
-                } else {
-                    System.out.println("수강생 삭제에 실패했습니다.");
                 }
             } else {
                 System.out.println("해당 수강생 ID를 찾을 수 없습니다.");
