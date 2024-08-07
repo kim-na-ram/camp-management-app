@@ -72,6 +72,10 @@ public class StudentStatusManagementImpl implements StudentStatusManagement {
                 System.out.println("ID를 찾을 수 없습니다.");
                 found = false;
             }
+            if (id.getStatus() == null) {
+                System.out.println("상태를 먼저 등록 해주세요.");
+                return;
+            }
             while (found) {
                 System.out.println("수강생 상태를 선택하세요.");
                 System.out.println("1. Green");
@@ -87,7 +91,7 @@ public class StudentStatusManagementImpl implements StudentStatusManagement {
                         System.out.println("이름: " + id.getStudentName());
                         System.out.println("완료!" + id.getStatus());
                         return;
-                    } else {
+                    } else if (status == null) {
                         System.out.println("알맞는 번호를 입력하세요.");
                     }
                 } catch (InputMismatchException e) {
