@@ -42,4 +42,9 @@ public class Student {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
+    }
+
 }
