@@ -72,15 +72,17 @@ public class CampManagementApplication {
             System.out.println("1. 수강생 등록");
             System.out.println("2. 수강생 상태 관리");
             System.out.println("3. 수강생 목록 조회");
-            System.out.println("4. 메인 화면 이동");
+            System.out.println("4. 등록 수강생 이름 수정");
+            System.out.println("5. 메인 화면 이동");
             System.out.print("관리 항목을 선택하세요...");
             int input = sc.nextInt();
 
             switch (input) {
                 case 1 -> studentManagement.createStudent(); // 수강생 등록
-                case 2 -> displayStatusView(); // 수강생 목록 조회
+                case 2 -> displayStatusView(); // 수강생 상태 조회
                 case 3 -> studentManagement.inquireStudent(); // 수강생 목록 조회
-                case 4 -> flag = false; // 메인 화면 이동
+                case 4 -> studentManagement.modifyStudentName(); // 수강생 이름 수정
+                case 5 -> flag = false; // 메인 화면 이동
                 default -> {
                     System.out.println("잘못된 입력입니다.\n메인 화면 이동...");
                     flag = false;
@@ -104,7 +106,7 @@ public class CampManagementApplication {
             switch (input) {
                 case 1 -> smi.createStatus(); // 상태 등록
                 case 2 -> smi.updateStatus(); // 상태 수정
-                case 3 -> flag = false; // 수강생 관리 화면 이동
+                case 3 -> flag = false; // 메인 화면 이동
                 default -> {
                     System.out.println("잘못된 입력입니다.\n메인 화면 이동...");
                     flag = false;
@@ -112,6 +114,7 @@ public class CampManagementApplication {
             }
         }
     }
+
 
     private static void displayScoreView() {
         boolean flag = true;
