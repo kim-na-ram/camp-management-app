@@ -2,23 +2,24 @@ package com.bootcamp.management;
 
 import com.bootcamp.exception.ManagementException;
 import com.bootcamp.model.*;
+import com.bootcamp.repository.ScoreRepository;
+import com.bootcamp.repository.ScoreRepositoryImpl;
+import com.bootcamp.repository.StudentRepository;
 import com.bootcamp.utils.Utils;
 import com.bootcamp.validation.ScoreValidator;
 
 import java.util.*;
 
 public class ScoreRecordManagementImpl implements ScoreRecordManagement {
-    private final StudentManagement studentManagement;
-
-    // 점수 저장 리스트
-    private final List<Score> scoreStore;
+    private final StudentRepository studentRepository;
+    private final ScoreRepository scoreRepository;
 
     // 스캐너
     private final Scanner sc = new Scanner(System.in);
 
-    public ScoreRecordManagementImpl(StudentManagement studentManagement) {
-        this.scoreStore = new ArrayList<>();
-        this.studentManagement = studentManagement;
+    public ScoreRecordManagementImpl() {
+        this.studentRepository = new StudentRepository();
+        this.scoreRepository = new ScoreRepositoryImpl();
     }
 
     // 수강생의 과목별 시험 회차 및 점수 등록
@@ -33,7 +34,7 @@ public class ScoreRecordManagementImpl implements ScoreRecordManagement {
             System.out.println("관리할 수강생의 번호를 입력하시오...");
             studentId = sc.next();
 
-            if (studentManagement.isExistStudent(studentId)) {
+            if (studentRepository.isExistStudentById(studentId)) {
                 newScore.setStudentId(studentId);
                 break;
             }
@@ -49,7 +50,7 @@ public class ScoreRecordManagementImpl implements ScoreRecordManagement {
                 subjectId = sc.next();
 
                 subjectType = SubjectInfo.getSubjectType(subjectId);
-                List<String> selectedSubjectList = studentManagement.getSelectedSubjectList(studentId, subjectType);
+                List<String> selectedSubjectList = studentRepository.getSelectedSubjectByStudentIdAndSubjectType(studentId, subjectType);
 
                 if (ScoreValidator.validateSubjectId(selectedSubjectList, subjectId)) {
                     newScore.setSubjectId(subjectId);
@@ -68,12 +69,15 @@ public class ScoreRecordManagementImpl implements ScoreRecordManagement {
                 System.out.println("등록할 회차를 입력하시오...");
                 round = sc.nextInt();
 
-                if (!ScoreValidator.validateRound(scoreStore, studentId, subjectId, round)) {
+                boolean isExistRound = scoreRepository.isExistScoreByStudentIdAndSubjectIdAndRound(studentId, subjectId, round);
+
+                if (ScoreValidator.validateRound(round)
+                       && !isExistRound) {
                     newScore.setRound(round);
                     break;
                 }
 
-                System.out.println("이미 등록되어 있는 회차는 등록할 수 없습니다.");
+                if (isExistRound) System.out.println("이미 등록되어 있는 회차는 등록할 수 없습니다.");
                 if (Utils.printEscapeCondition(sc)) return;
             } catch (InputMismatchException e) {
                 System.out.println("\n회차는 숫자만 입력할 수 있습니다.");
@@ -103,7 +107,7 @@ public class ScoreRecordManagementImpl implements ScoreRecordManagement {
         }
 
         System.out.println("시험 점수를 등록합니다...");
-        scoreStore.add(newScore);
+        scoreRepository.addNewScore(newScore);
         System.out.println("\n점수 등록 성공!");
     }
 
@@ -111,14 +115,14 @@ public class ScoreRecordManagementImpl implements ScoreRecordManagement {
     @Override
     public void updateRoundScoreBySubject() {
         String studentId, subjectId;
-        int round, scoreIdx;
+        int round, index;
         Score findScore;
 
         while (true) {
             System.out.println("관리할 수강생의 고유번호를 입력하시오.");
             studentId = sc.next();
 
-            if (studentManagement.isExistStudent(studentId)) break;
+            if (studentRepository.isExistStudentById(studentId)) break;
 
             System.out.println("\n해당 학생 ID를 찾을 수 없습니다.");
             if (Utils.printEscapeCondition(sc)) return;
@@ -129,7 +133,12 @@ public class ScoreRecordManagementImpl implements ScoreRecordManagement {
             System.out.println("수정할 과목의 고유번호를 입력하시오.");
             subjectId = sc.next();
 
-            if (ScoreValidator.validateSubjectIdIsExistScoreList(scoreStore, studentId, subjectId)) break;
+            boolean isExistSubjectId = ScoreValidator.validateSubjectIdIsExistScoreList(subjectId);
+            boolean isExistScore = scoreRepository.isExistScoreByStudentIdAndSubjectId(studentId, subjectId);
+
+            if (isExistSubjectId && isExistScore) break;
+            if (isExistSubjectId) System.out.println("\n해당 과목의 성적은 존재하지 않습니다.");
+
             if (Utils.printEscapeCondition(sc)) return;
         }
 
@@ -138,22 +147,14 @@ public class ScoreRecordManagementImpl implements ScoreRecordManagement {
                 System.out.println("수정할 회차를 입력하시오.");
                 round = sc.nextInt();
 
-                // capturing lambda 로 인한 effectively final 변수 선언
-                String finalStudentId = studentId;
-                String finalSubjectId = subjectId;
-                int finalRound = round;
-                if (ScoreValidator.validateRound(scoreStore, studentId, subjectId, round)) {
-                    findScore = scoreStore.stream()
-                            .filter(sc -> sc.getStudentId().equals(finalStudentId)
-                                    && sc.getSubjectId().equals(finalSubjectId)
-                                    && sc.getRound() == finalRound)
-                            .findFirst()
-                            .get();
-                    scoreIdx = scoreStore.indexOf(findScore);
+                boolean isValidateRound = ScoreValidator.validateRound(round);
+                boolean isExistScore = scoreRepository.isExistScoreByStudentIdAndSubjectIdAndRound(studentId, subjectId, round);
+
+                if (isValidateRound && isExistScore) {
+                    findScore = scoreRepository.getScoreByStudentIdAndSubjectIdAndRound(studentId, subjectId, round).get();
                     break;
                 }
-
-                System.out.println("\n해당 회차의 점수는 존재하지 않습니다.");
+                if (isValidateRound) System.out.println("\n해당 회차의 점수는 존재하지 않습니다.");
                 if (Utils.printEscapeCondition(sc)) return;
             } catch (InputMismatchException e) {
                 System.out.println("\n회차는 숫자만 입력할 수 있습니다.");
@@ -183,8 +184,6 @@ public class ScoreRecordManagementImpl implements ScoreRecordManagement {
         findScore.setScore(score);
         findScore.setGrade(scoreToGrade(score, SubjectInfo.getSubjectType(subjectId)));
 
-        scoreStore.set(scoreIdx, findScore);
-
         System.out.println("\n점수 수정 성공!");
     }
 
@@ -197,7 +196,7 @@ public class ScoreRecordManagementImpl implements ScoreRecordManagement {
             System.out.println("관리할 수강생의 고유번호를 입력하시오.");
             studentId = sc.next();
 
-            if (studentManagement.isExistStudent(studentId)) break;
+            if (studentRepository.isExistStudentById(studentId)) break;
 
             System.out.println("\n해당 학생 ID를 찾을 수 없습니다.");
             if (Utils.printEscapeCondition(sc)) return;
@@ -208,20 +207,18 @@ public class ScoreRecordManagementImpl implements ScoreRecordManagement {
             System.out.println("등급을 확인할 과목의 고유번호를 입력하시오.");
             subjectId = sc.next();
 
-            if (ScoreValidator.validateSubjectIdIsExistScoreList(scoreStore, studentId, subjectId)) break;
+            boolean isExistSubjectId = ScoreValidator.validateSubjectIdIsExistScoreList(subjectId);
+            boolean isExistScore = scoreRepository.isExistScoreByStudentIdAndSubjectId(studentId, subjectId);
+
+            if (isExistSubjectId && isExistScore) break;
+            if (isExistSubjectId) System.out.println("\n해당 과목의 성적은 존재하지 않습니다.");
             if (Utils.printEscapeCondition(sc)) return;
         }
 
         System.out.println("회차별 등급을 조회합니다...");
 
-        // capturing lambda 로 인한 effectively final 변수 선언
-        String finalStudentId = studentId;
-        String finalSubjectId = subjectId;
-
-        List<Score> roundList = scoreStore.stream().filter(sc -> sc.getStudentId().equals(finalStudentId)
-                && sc.getSubjectId().equals(finalSubjectId)).toList();
-
-        roundList.forEach(score -> System.out.println(score.getRound() + "회차 등급 : " + score.getGrade()));
+        scoreRepository.getScoreStoreByStudentIdAndSubjectId(studentId, subjectId)
+                .forEach(score -> System.out.println(score.getRound() + "회차 등급 : " + score.getGrade()));
 
         System.out.println("\n등급 조회 성공!");
     }

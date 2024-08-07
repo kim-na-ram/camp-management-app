@@ -1,6 +1,7 @@
 package com.bootcamp.repository;
 
 import com.bootcamp.model.Student;
+import com.bootcamp.model.SubjectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,9 @@ import java.util.Optional;
 public class StudentRepository {
     private static List<Student> studentStore = new ArrayList<>();
 
+    public boolean isExistStudentById(String studentId) {
+        return studentStore.stream().anyMatch(student -> student.getStudentId().equals(studentId));
+    }
     // 리스트 전체 조회
     public static List<Student> getStudentStore() {
         return studentStore;
@@ -45,5 +49,12 @@ public class StudentRepository {
     // 객체 수정 인덱스 기준
     public void editStudent(int index, Student student) {
         studentStore.set(index, student);
+    }
+
+    public List<String> getSelectedSubjectByStudentIdAndSubjectType(String studentId, SubjectType subjectType) {
+        return studentStore.stream().filter(st -> st.getStudentId().equals(studentId))
+                .map(st -> subjectType == SubjectType.SUBJECT_TYPE_MANDATORY ? st.getCompulsory() : st.getElective())
+                .findFirst()
+                .get();
     }
 }

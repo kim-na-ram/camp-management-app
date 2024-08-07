@@ -1,7 +1,6 @@
 package com.bootcamp.management;
 
 import com.bootcamp.model.Student;
-import com.bootcamp.model.StudentStatus;
 import com.bootcamp.model.SubjectInfo;
 import com.bootcamp.model.SubjectType;
 import com.bootcamp.repository.StudentRepository;

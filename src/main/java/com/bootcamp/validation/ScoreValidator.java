@@ -15,27 +15,21 @@ public class ScoreValidator {
         return selectedSubjectList.contains(subjectName);
     }
 
-    public static boolean validateSubjectIdIsExistScoreList(List<Score> scoreStore, String studentId, String subjectId) {
+    public static boolean validateSubjectIdIsExistScoreList(String subjectId) {
         if (!SubjectInfo.isExistSubject(subjectId)) {
             System.out.println("\n존재하지 않는 과목입니다.");
-            return false;
-        }
-        if (scoreStore.stream().filter(sc -> sc.getStudentId().equals(studentId)).noneMatch(sc -> sc.getSubjectId().equals(subjectId))) {
-            System.out.println("\n해당 과목의 점수는 존재하지 않습니다.");
             return false;
         }
 
         return true;
     }
 
-    public static boolean validateRound(List<Score> scoreStore, String studentId, String subjectId, int round) {
+    public static boolean validateRound(int round) {
         if (round <= 0 || round > 10) {
-            throw new ManagementException("회차는 1 ~ 10까지만 입력 가능합니다.");
-        } else {
-            return scoreStore.stream().anyMatch(sc -> sc.getStudentId().equals(studentId)
-                    && sc.getSubjectId().equals(subjectId)
-                    && sc.getRound() == round);
+            System.out.println("회차는 1 ~ 10까지만 입력 가능합니다.");
+            return false;
         }
+        return true;
     }
 
     public static boolean validateScore(int score) {

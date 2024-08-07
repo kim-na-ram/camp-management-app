@@ -2,10 +2,9 @@ package com.bootcamp;
 
 import com.bootcamp.management.StudentManagement;
 import com.bootcamp.management.StudentManagementImpl;
-import com.bootcamp.management.ScoreRecordManagement;
-import com.bootcamp.management.ScoreRecordManagementImpl;
 import com.bootcamp.management.StudentStatusManagement;
 import com.bootcamp.management.StudentStatusManagementImpl;
+import com.bootcamp.view.ScoreView;
 
 import java.util.*;
 
@@ -19,12 +18,16 @@ import java.util.*;
  */
 public class CampManagementApplication {
     private static StudentManagement studentManagement;
-    private static ScoreRecordManagement scoreRecordManagement;
+
+    // view
+    private static ScoreView scoreView;
 
     // 스캐너
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
+        scoreView = new ScoreView();
+
         setInitData();
         try {
             displayMainView();
@@ -37,7 +40,6 @@ public class CampManagementApplication {
 
     private static void setInitData() {
         studentManagement = new StudentManagementImpl();
-        scoreRecordManagement = new ScoreRecordManagementImpl(studentManagement);
     }
 
     private static void displayMainView() throws InterruptedException {
@@ -53,7 +55,7 @@ public class CampManagementApplication {
 
             switch (input) {
                 case 1 -> displayStudentView(); // 수강생 관리
-                case 2 -> displayScoreView(); // 점수 관리
+                case 2 -> scoreView.displayScoreView(sc); // 점수 관리
                 case 3 -> flag = false; // 프로그램 종료
                 default -> {
                     System.out.println("잘못된 입력입니다.\n되돌아갑니다!");
@@ -107,32 +109,6 @@ public class CampManagementApplication {
                 case 1 -> smi.createStatus(); // 상태 등록
                 case 2 -> smi.updateStatus(); // 상태 수정
                 case 3 -> flag = false; // 메인 화면 이동
-                default -> {
-                    System.out.println("잘못된 입력입니다.\n메인 화면 이동...");
-                    flag = false;
-                }
-            }
-        }
-    }
-
-
-    private static void displayScoreView() {
-        boolean flag = true;
-        while (flag) {
-            System.out.println("==================================");
-            System.out.println("점수 관리 실행 중...");
-            System.out.println("1. 수강생의 과목별 시험 회차 및 점수 등록");
-            System.out.println("2. 수강생의 과목별 회차 점수 수정");
-            System.out.println("3. 수강생의 특정 과목 회차별 등급 조회");
-            System.out.println("4. 메인 화면 이동");
-            System.out.print("관리 항목을 선택하세요...");
-            int input = sc.nextInt();
-
-            switch (input) {
-                case 1 -> scoreRecordManagement.createScore(); // 수강생의 과목별 시험 회차 및 점수 등록
-                case 2 -> scoreRecordManagement.updateRoundScoreBySubject(); // 수강생의 과목별 회차 점수 수정
-                case 3 -> scoreRecordManagement.inquireRoundGradeBySubject(); // 수강생의 특정 과목 회차별 등급 조회
-                case 4 -> flag = false; // 메인 화면 이동
                 default -> {
                     System.out.println("잘못된 입력입니다.\n메인 화면 이동...");
                     flag = false;
