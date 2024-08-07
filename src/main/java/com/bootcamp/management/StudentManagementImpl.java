@@ -170,12 +170,11 @@ public class StudentManagementImpl implements StudentManagement {
                 System.out.println("입력한 ID가 존재하지 않습니다");
             }
         } else if (select == 3) {
-            // TODO 이 부분은 중복 이름이 있을 수도 있으니 List 로 받는 것이 맞을듯함
             System.out.println("조회할 수강생의 이름을 입력해 주세요: ");
             String studentName = sc.next();
-            for (Student student : studentStore) {
-                if (student.getStudentName().equalsIgnoreCase(studentName)) {
-                    inquiry = true;
+            inquiry = studentRepository.isExistStudentByName(studentName);
+                  if (inquiry) {
+                      Student student = studentRepository.getStudentByName(studentName).get();
                     System.out.println();
                     System.out.println("수강생 조회를 완료했습니다.");
                     System.out.println("이름: " + student.getStudentName());
@@ -183,33 +182,26 @@ public class StudentManagementImpl implements StudentManagement {
                     System.out.println("필수 과목: " + student.getCompulsory());
                     System.out.println("선택 과목: " + student.getElective());
                     System.out.println("상태 : " + student.getStatus() );
-                }
-            }if (!inquiry) {
-                System.out.println("등록된 수강생이 존재하지 않습니다");
+                } else {
+                      System.out.println("등록된 수강생이 존재하지 않습니다");
+                  }
             }
         }
-    }
 
-    // TODO repository 메서드를 사용하도록 수정
-    // 수강생 이름 수정
-    public void modifyStudentName(){
-        System.out.println("수정하실 수강생의 이름을 입력해 주세요: ");
-        String studentName = sc.next();
-        boolean named = false;
-
-        List<Student> studentStore = studentRepository.getStudentStore();
-        for (Student student : studentStore) {
-            if (student.getStudentName().equalsIgnoreCase(studentName)) {
-                named = true;
-                System.out.println();
-                System.out.println("현재 이름: " + student.getStudentName());
-                System.out.println("새로운 이름을 입력해주세요: ");
-                String newName = sc.next();
-                student.setStudentName(newName);
-                System.out.println("수정된 이름: " +student.getStudentName());
-                System.out.println("이름 수정이 정상적으로 완료 되었습니다.");
-            }
-        }if (!named){
+    @Override
+    public void modifyStudentName() {
+        System.out.println("수정하실 수강생의 ID를 입력해 주세요: ");
+        String studentId = sc.next();
+        Optional<Student> student = studentRepository.getStudentById(studentId);
+        if (student.isPresent()) {
+            System.out.println();
+            System.out.println("현재 이름: " + student.get().getStudentName());
+            System.out.println("새로운 이름을 입력해주세요: ");
+            String newName = sc.next();
+            student.get().setStudentName(newName);
+            System.out.println("수정된 이름: " +student.get().getStudentName());
+            System.out.println("이름 수정이 정상적으로 완료 되었습니다.");
+        } else {
             System.out.println("등록된 수강생이 존재하지 않습니다");
         }
     }
@@ -247,3 +239,6 @@ public class StudentManagementImpl implements StudentManagement {
         }
     }
 }
+
+
+

@@ -16,6 +16,11 @@ public class StudentRepositoryImpl implements StudentRepository {
         return studentStore.stream().anyMatch(student -> student.getStudentId().equals(studentId));
     }
 
+    @Override
+    public boolean isExistStudentByName(String studentName) {
+        return studentStore.stream().anyMatch(student -> student.getStudentName().equals(studentName));
+    }
+
     // 리스트 전체 조회
     @Override
     public List<Student> getStudentStore() {
@@ -72,4 +77,15 @@ public class StudentRepositoryImpl implements StudentRepository {
                 .findFirst()
                 .get();
     }
+
+    public boolean modifyStudentName(String studentId, String newName){
+       Optional <Student> modifyStudent = studentStore.stream().filter(st -> st.getStudentId().equals(studentId)).findAny();
+       if(modifyStudent.isPresent()) {
+           Student student = modifyStudent.get();
+           student.setStudentName(newName);
+           return true;
+       }
+       return false;
+    }
 }
+

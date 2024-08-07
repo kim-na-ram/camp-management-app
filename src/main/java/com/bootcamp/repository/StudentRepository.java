@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface StudentRepository {
     boolean isExistStudentById(String studentId);
+    boolean isExistStudentByName(String studentName);
     List<Student> getStudentStore();
     Optional<Student> getStudentById(String studentId);
     Optional<Student> getStudentByName(String studentName);
