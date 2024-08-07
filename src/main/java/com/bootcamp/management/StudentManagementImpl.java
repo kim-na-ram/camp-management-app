@@ -4,6 +4,7 @@ import com.bootcamp.model.Student;
 import com.bootcamp.model.StudentStatus;
 import com.bootcamp.model.SubjectInfo;
 import com.bootcamp.model.SubjectType;
+import com.bootcamp.repository.StudentRepository;
 
 import java.util.*;
 
@@ -12,7 +13,7 @@ import static com.bootcamp.utils.Utils.sequence;
 
 public class StudentManagementImpl implements StudentManagement {
 
-    private static List<Student> studentStore;
+    private static List<Student> studentStore = StudentRepository.getStudentStore();
     private static List<String> compulsory;
     private static List<String> elective;
 
