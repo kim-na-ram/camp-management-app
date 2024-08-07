@@ -232,9 +232,13 @@ public class StudentManagementImpl implements StudentManagement {
                     // 점수 저장소에서 해당 수강생의 점수도 삭제
                     if (scoreRepository.removeScoresByStudentId(studentId)) {
                         System.out.println("수강생과 관련된 모든 점수를 삭제했습니다.");
+                    } else {
+                        System.out.println("해당 수강생의 점수를 찾을 수 없습니다.");
                     }
                     System.out.println("수강생 삭제 성공!");
                     break;
+                } else {
+                    System.out.println("수강생 삭제에 실패했습니다.");
                 }
             } else {
                 System.out.println("해당 수강생 ID를 찾을 수 없습니다.");
