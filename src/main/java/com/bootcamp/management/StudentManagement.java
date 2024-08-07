@@ -7,6 +7,8 @@ import java.util.List;
 public interface StudentManagement {
     void createStudent();
     void inquireStudent();
+    void modifyStudentName();
     boolean isExistStudent(String studentId);
     List<String> getSelectedSubjectList(String studentId, SubjectType subjectType);
 }
+

@@ -138,59 +138,87 @@ public class StudentManagementImpl implements StudentManagement {
         }
     }
 
-    @Override
-    public void inquireStudent() {                 //예외처리 생각해보기
+    @Override      // 수강생 조회
+    public void inquireStudent() {
         System.out.println("1. 수강생 전체 조회");
         System.out.println("2. 수강생 ID 조회");
         System.out.println("3. 수강생 이름 조회");
 
-        // 기능 구현
+
         int select = sc.nextInt();
+        boolean inquiry = false;
 
         if (select == 1) {
             System.out.println("\n수강생 목록을 조회합니다...");
             if (studentStore.isEmpty()) {
                 System.out.println("등록된 수강생이 존재하지 않습니다");
             } else {
-                // 수강생 목록을 sort 를 사용하여 정렬하고
-                // comparator 를 사용해 기준으로 오름차순 정렬
                 studentStore.sort(Comparator.comparing(Student::getStudentName));
-
-                // 정렬된 수강생 목록 출력
+                System.out.println("전체 수강생 조회를 완료했습니다.");
                 for (Student student : studentStore) {
+                    System.out.println();
                     System.out.println("이름: " + student.getStudentName());
                     System.out.println("ID: " + student.getStudentId());
-                    System.out.println(); // 수강생 정보 구분을 위해 빈 줄 추가
+                    System.out.println("필수 과목: " + student.getCompulsory());
+                    System.out.println("선택 과목: " + student.getElective());
+                    System.out.println("상태 : " + student.getStatus() );
                 }
-
-                System.out.println("수강생 목록 조회 성공!");
             }
         } else if (select == 2) {
             System.out.println("조회할 수강생의 ID를 입력해 주세요: ");
             String studentId = sc.next();
-
             for (Student student : studentStore) {
                 if (student.getStudentId().equalsIgnoreCase(studentId)) {
+                    inquiry = true;
                     System.out.println();
+                    System.out.println("수강생 조회를 완료했습니다.");
                     System.out.println("이름: " + student.getStudentName());
                     System.out.println("ID: " + student.getStudentId());
-
-                } else if (studentId.isEmpty()) {
-                    System.out.println("등록된 수강생이 존재하지 않습니다");
+                    System.out.println("필수 과목: " + student.getCompulsory());
+                    System.out.println("선택 과목: " + student.getElective());
+                    System.out.println("상태 : " + student.getStatus() );
                 }
+            }if (!inquiry) {
+                System.out.println("입력한 ID가 존재하지 않습니다");
             }
         } else if (select == 3) {
             System.out.println("조회할 수강생의 이름을 입력해 주세요: ");
             String studentName = sc.next();
             for (Student student : studentStore) {
                 if (student.getStudentName().equalsIgnoreCase(studentName)) {
+                    inquiry = true;
                     System.out.println();
+                    System.out.println("수강생 조회를 완료했습니다.");
                     System.out.println("이름: " + student.getStudentName());
                     System.out.println("ID: " + student.getStudentId());
-                } else if (studentName.isEmpty()) {
-                    System.out.println("등록된 수강생이 존재하지 않습니다");
+                    System.out.println("필수 과목: " + student.getCompulsory());
+                    System.out.println("선택 과목: " + student.getElective());
+                    System.out.println("상태 : " + student.getStatus() );
                 }
+            }if (!inquiry) {
+                System.out.println("등록된 수강생이 존재하지 않습니다");
             }
+        }
+    }
+
+    // 수강생 이름 수정
+    public void modifyStudentName(){
+        System.out.println("수정하실 수강생의 이름을 입력해 주세요: ");
+        String studentName = sc.next();
+        boolean named = false;
+        for (Student student : studentStore) {
+            if (student.getStudentName().equalsIgnoreCase(studentName)) {
+                named = true;
+                System.out.println();
+                System.out.println("현재 이름: " + student.getStudentName());
+                System.out.println("새로운 이름을 입력해주세요: ");
+                String newName = sc.next();
+                student.setStudentName(newName);
+                System.out.println("수정된 이름: " +student.getStudentName());
+                System.out.println("이름 수정이 정상적으로 완료 되었습니다.");
+            }
+        }if (!named){
+            System.out.println("등록된 수강생이 존재하지 않습니다");
         }
     }
 
