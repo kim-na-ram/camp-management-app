@@ -48,7 +48,7 @@ public class StudentManagementImpl implements StudentManagement {
     public String createStudentName() {
         System.out.println("\n수강생을 등록합니다...");
         System.out.print("수강생 이름 입력: ");
-        return sc.nextLine();
+        return sc.next();
     }
 
     // 수강생 필수 과목 등록
