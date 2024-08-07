@@ -30,14 +30,12 @@ public class StudentStatusManagementImpl implements StudentStatusManagement {
     @Override
     public void createStatus() {
         System.out.println("수강생 상태를 등록합니다.");
-        boolean found = true;
         while (true) {
             Student id = getStudent();
             if(id == null){
                 System.out.println("ID를 찾을 수 없습니다.");
-                found = false;
             }
-            while (found) {
+            while (id != null) {
                 System.out.println("수강생 상태를 선택하세요.");
                 System.out.println("1. Green");
                 System.out.println("2. Yellow");
@@ -65,18 +63,15 @@ public class StudentStatusManagementImpl implements StudentStatusManagement {
     @Override
     public void updateStatus() {
         System.out.println("수강생 상태를 수정합니다.");
-        boolean found = true;
         while (true) {
             Student id = getStudent();
             if(id == null){
                 System.out.println("ID를 찾을 수 없습니다.");
-                found = false;
-            }
-            if (id.getStatus() == null) {
+            } else if (id.getStatus() == null) {
                 System.out.println("상태를 먼저 등록 해주세요.");
                 return;
             }
-            while (found) {
+            while (id != null) {
                 System.out.println("수강생 상태를 선택하세요.");
                 System.out.println("1. Green");
                 System.out.println("2. Yellow");
