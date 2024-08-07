@@ -1,6 +1,7 @@
 package com.bootcamp.management;
 
 import com.bootcamp.model.Student;
+import com.bootcamp.model.StudentStatus;
 import com.bootcamp.model.SubjectInfo;
 import com.bootcamp.model.SubjectType;
 
@@ -27,6 +28,9 @@ public class StudentManagementImpl implements StudentManagement {
     }
     public List<String> getElective() {
         return elective;
+    }
+    public static List<Student> getStudentStore() {
+        return studentStore;
     }
 
     @Override
@@ -56,9 +60,11 @@ public class StudentManagementImpl implements StudentManagement {
         String studentName = sc.nextLine();
         return studentName;
     }
+
     // 수강생 필수 과목 등록
     public static void createStudentMandatory() {
         // 기능 구현 (필수 과목, 선택 과목)
+        System.out.println("==================================");
         System.out.println("필수 과목에 해당하는 번호를 입력하세요. (1 ~ 5)");
         System.out.println("1. Java ||  2. 객체 지향    ||  3. Spring");
         System.out.println("4. JPA  ||  5. MySQL");
@@ -199,4 +205,14 @@ public class StudentManagementImpl implements StudentManagement {
                 .findFirst()
                 .get();
     }
+
+    public static Student getStudentId(String studentId) {
+        for (Student student : studentStore){
+            if (student.getStudentId().equals(studentId)) {
+                return student;
+            }
+        }
+        return null;
+    }
+
 }

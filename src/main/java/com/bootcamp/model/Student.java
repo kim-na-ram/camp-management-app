@@ -5,6 +5,7 @@ import java.util.List;
 public class Student {
     private String studentId;
     private String studentName;
+    private String status;
     private List<String> compulsory;
     private List<String> elective;
 
@@ -24,6 +25,10 @@ public class Student {
         return studentName;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     public List<String> getCompulsory() {
         return compulsory;
     }
@@ -32,4 +37,9 @@ public class Student {
         return elective;
     }
 
+    // setter
+    // 수강생 상태
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
