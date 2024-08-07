@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class ScoreRepositoryImpl implements ScoreRepository {
-    private final List<Score> scoreStore = new ArrayList<>();
+    private final static List<Score> scoreStore = new ArrayList<>();
 
     @Override
     public boolean isExistScoreByStudentId(String studentId) {

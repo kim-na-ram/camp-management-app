@@ -22,9 +22,8 @@ public class StudentStatusManagementImpl implements StudentStatusManagement {
     }
 
     public Student getStudent() {
-        sc.nextLine();
         System.out.println("수강생의 ID를 입력하세요.");
-        studentId = sc.nextLine();
+        studentId = sc.next();
         return studentRepository.getStudentById(studentId).orElse(null);
     }
 
