@@ -45,6 +45,7 @@ public class StudentRepositoryImpl implements StudentRepository {
     }
 
     // ID로 객체 삭제
+    @Override
     public boolean removeStudentById(String studentId) {
         for(int i = 0; i < studentStore.size(); i++) {
             if(Objects.equals(studentId, studentStore.get(i).getStudentId())) {
@@ -57,6 +58,7 @@ public class StudentRepositoryImpl implements StudentRepository {
     }
 
     // 객체 받아와서 해당하는 객체 삭제
+    @Override
     public boolean removeStudent(Student student) {
         if(studentStore.contains(student)) {
             studentStore.remove(student);
@@ -67,6 +69,7 @@ public class StudentRepositoryImpl implements StudentRepository {
     }
 
     // 객체 수정 인덱스 기준
+    @Override
     public void editStudent(int index, Student student) {
         studentStore.set(index, student);
     }
@@ -76,16 +79,6 @@ public class StudentRepositoryImpl implements StudentRepository {
                 .map(st -> subjectType == SubjectType.SUBJECT_TYPE_MANDATORY ? st.getCompulsory() : st.getElective())
                 .findFirst()
                 .get();
-    }
-
-    public boolean modifyStudentName(String studentId, String newName){
-       Optional <Student> modifyStudent = studentStore.stream().filter(st -> st.getStudentId().equals(studentId)).findAny();
-       if(modifyStudent.isPresent()) {
-           Student student = modifyStudent.get();
-           student.setStudentName(newName);
-           return true;
-       }
-       return false;
     }
 }
 
